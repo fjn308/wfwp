@@ -20,7 +20,7 @@ It also supports: multiple monitors, blacklisting separate pictures or excluding
 
 ![general](/screenshots/6.png)
 
-If multiple monitors are attached, when switch, blacklist, details, or original button is clicked, a Which One? box will appear.
+If multiple monitors are attached, when switch, blacklist, details, or original button is clicked, a clickable "Which One?" box will appear.
 
 # 3. Things You need to Know
 
