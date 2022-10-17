@@ -16,6 +16,12 @@ It also supports: multiple monitors, blacklisting separate pictures or excluding
 
 ![general](/screenshots/4.png)![exclude](/screenshots/5.png)
 
+### 2.3 Multiple Monitors
+
+![general](/screenshots/6.png)
+
+If multiple monitors are attached, when switch, blacklist, details, or original button is clicked, a Which One? box will appear.
+
 # 3. Things You need to Know
 
 - wfwp assumes that aspect ratios of monitors are around 16:9, that is, for landscape monitors, it selects wallpapers from the pictures with ratios between 4:3 and 256:81; while for portrait monitors, the ratios should be between 256:81 and 3:4.
