@@ -141,6 +141,8 @@ Menu, Tray, Add, Re-Detect Monitors (%monitorcount%), detectmenu
 Menu, updatedotmenu, Add, Update the Database (%qualifieddatanumber%/%datfilelength%), updatedatamenu
 Menu, updatedotmenu, Add, Update wfwp, updatewfwpmenu
 Menu, Tray, Add, Update ..., :updatedotmenu
+If (A_ScriptName = "wfwp.ahk")
+    Menu, updatedotmenu, Disable, 2&
 Menu, Tray, Add, Settings, settingsmenu
 Menu, Tray, Add
 Menu, Tray, Add, Exit, exitmenu
