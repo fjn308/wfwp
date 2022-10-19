@@ -26,12 +26,10 @@ If multiple monitors are attached, when switch, blacklist, details, or original 
 
 - wfwp assumes that aspect ratios of monitors are around 16:9, that is, for landscape monitors, it selects wallpapers from the pictures with ratios between 4:3 and 256:81; while for portrait monitors, the ratios should be between 256:81 and 3:4.
 
-- wfwp does not display pictures with less resolutions than target monitors on them, but it uses resized pictures for storage saving, which still have resolutions no less than target monitors, thus no observable loss should be caused.
-
 - wfwp caches pictures to guarantee smooth switches. For each monitor, there is an independent limitation on its cache:
-  - a monitor not over fhd (1920*1080): 9 mb fhd pictures;
-  - a monitor not over qhd (2560*1440, aka 2k sometimes) but over fhd: 16 mb qhd pictures;
-  - a monitor not over uhd (3840*2160, aka 4k sometimes) but over qhd: 36 mb uhd pictures.
+  - a monitor not over fhd (1920*1080): 9 mb fhd pictures resized from higher resolution ones;
+  - a monitor not over qhd (2560*1440, aka 2k sometimes) but over fhd: 16 mb qhd pictures resized from higher resolution ones;
+  - a monitor not over uhd (3840*2160, aka 4k sometimes) but over qhd: 36 mb uhd pictures resized from higher resolution ones.
 
 - wfwp takes monitors with resolutions over uhd as uhd, which should not cause problems for most users since such monitors are rare.
 
