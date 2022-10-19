@@ -350,12 +350,10 @@ If (firstrun || (binaryexclude != binaryexcludecache))
     refrencenewlists := true
     Menu, updatedotmenu, Rename, 1&, Update the Database (%qualifieddatanumber%/%datfilelength%)
     moveonlist := premoveon("urls.sha1", "cache", monitors)
+    superremove("urls.sha1", "cache")
 }
 If (firstrun || moveonlist)
-{
-    superremove("urls.sha1", "cache")
     GoSub, switchmenu
-}
 Else If (speriod != speriodcache)
 {
     sperioddelta := speriod - speriodcache
