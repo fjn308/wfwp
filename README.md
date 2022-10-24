@@ -43,7 +43,7 @@ If multiple monitors are attached, when switch, blacklist, details, or original 
 
 - Except for featured.ahk, there is another script called download.ahk, which can work with featured.ahk to achieve an expanded freedom of selecting and downloading featured pictures. Check [here](https://github.com/fjn308/wfwp/tree/main/scripts) to learn more.
 
-# 5. Icons and More
+# 5. Icons and Legal Issues
 
 Except for the wallpapers, which come from [wikimedia commons](https://commons.wikimedia.org/wiki/Main_Page), the icons used in wfwp are also from wikicommons:
 
@@ -53,3 +53,8 @@ commons.png: https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Commons-l
 ```
 
 If there are any legal issues requiring further addressing, please let me know. Thank you.
+
+# 6. 2023 Roadmap
+
+- [ ] Support Monitors with Resolutions over UHD
+- [ ] Re-write to be Cross-platform: Add Support for macOS
