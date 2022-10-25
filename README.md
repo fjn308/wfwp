@@ -1,8 +1,8 @@
 # 1. Introduction
 
-wfwp is a wallpaper displayer for windows. It takes 15k+ high quality [featured pictures](https://commons.wikimedia.org/wiki/Commons:Featured_pictures) from [wikimedia commons](https://commons.wikimedia.org/wiki/Main_Page) as an online library. wfwp automatically detects orientations and resolutions of your monitors and displays suitable pictures randomly at a given frequency.
+`wfwp` is a wallpaper displayer for windows. Using [Wikimedia Commons](https://commons.wikimedia.org/wiki/Main_Page) as its wallpaper source, `wfwp` detects orientations and resolutions of your monitor, automatically selects suitable pictures from over 15,000 high-quality [featured pictures](https://commons.wikimedia.org/wiki/Commons:Featured_pictures), and change them as your wallpaper at a given frequency.
 
-It also supports: multiple monitors, blacklisting separate pictures or excluding specific categories of pictures, manually switching over pictures, downloading or checking details of original pictures, and http proxy for people who have [limited access to wikipedia](https://en.wikipedia.org/wiki/Censorship_of_Wikipedia).
+Other notable features include: multiple monitors, blacklisting specific pictures or excluding specific categories of pictures, manually switching over pictures, downloading or checking details of original pictures, and HTTP proxy for people who have [limited access to wikipedia](https://en.wikipedia.org/wiki/Censorship_of_Wikipedia).
 
 # 2. Screenshots
 
@@ -20,32 +20,32 @@ It also supports: multiple monitors, blacklisting separate pictures or excluding
 
 ![general](/screenshots/6.png)
 
-If multiple monitors are attached, when switch, blacklist, details, or original button is clicked, a clickable "Which One?" box will appear.
+If there are multiple monitors, a clickable "Which One?" box will appear when **Switch**, **Blacklist**, **Details**, or **Original** button is clicked.
 
 # 3. Things You need to Know
 
-- wfwp assumes that aspect ratios of monitors are around 16:9, that is, for landscape monitors, it selects wallpapers from the pictures with ratios between 4:3 and 256:81; while for portrait monitors, the ratios should be between 256:81 and 3:4.
+- `wfwp` assumes that aspect ratios of monitors are around 16:9, that is, for landscape monitors, it selects wallpapers from the pictures with ratios between 4:3 and 256:81; while for portrait monitors, the ratios would be between 256:81 and 3:4.
 
-- wfwp caches pictures to guarantee smooth switches. For each monitor, there is an independent limitation on its cache:
-  - a monitor not over fhd (1920*1080): 9 mb fhd pictures resized from higher resolution ones;
-  - a monitor not over qhd (2560*1440, aka 2k sometimes) but over fhd: 16 mb qhd pictures resized from higher resolution ones;
-  - a monitor not over uhd (3840*2160, aka 4k sometimes) but over qhd: 36 mb uhd pictures resized from higher resolution ones.
+- `wfwp` caches pictures to ensure smooth switches. For each monitor, there is an independent limitation on its cache:
+  - resolution smaller or equal to FHD (1920*1080): 9MB FHD pictures resized from higher resolution ones;
+  - resolution smaller or equal to QHD (2560*1440, a.k.a 2K) but over FHD: 16MB QHD pictures resized from higher resolution ones;
+  - resolution smaller or equal to UHD (3840*2160, a.k.a 4K) but over QHD: 36MB UHD pictures resized from higher resolution ones.
 
-- wfwp takes monitors with resolutions over uhd as uhd, which should not cause problems for most users since such monitors are rare.
+- `wfwp` treats monitors with resolutions larger than UHD as UHD. If you have such monitor, sorry :(
 
-- wfwp is only tested on my windows 11, but it should work fine on windows 10. The only potential limitations come from several powershell commands in support of proxy and checksum, while powershell 5.1 is pre-installed on all windows 10, where the related commands are already supported.
+- `wfwp` is only tested on my Windows 11, but it should work fine on Windows 10. The only potential limitations come from several Powershell commands in support of proxy and checksum, while Powershell 5.1 is pre-installed on all Windows 10, where the related commands are already supported.
 
 # 4. Things You May Want to Know
 
-- wfwp is written in [autohotkey](https://www.autohotkey.com/), a script language exclusive for windows. At first, I just wanted to fix a wallpaper shortage situation caused by mistakenly deleting my library. I am not even an amateur programmer but ahk is easy to get started. The scripts aimed at downloading pictures eventually grew into wfwp. If necessary, I will re-write it in a more suitable language, but for now I think ahk is enough.
+- `wfwp` is written in [autohotkey](https://www.autohotkey.com/), a script language exclusive for Windows. At first, I just wanted to fix my wallpaper shortage situation caused by mistakenly deleting my library. I am not even an amateur programmer but `autohotkey` is easy to get started. The scripts aimed at downloading pictures eventually grew into `wfwp`. If necessary, I will re-write it in a more suitable language, but for now I think `autohotkey` is enough.
 
-- wfwp selects pictures from the [resolved.dat](https://raw.githubusercontent.com/fjn308/wfwp/main/upload/resolved.dat) logging infomations of all featured pictures, which is generated by its predecessor, featured.ahk. resolved.dat does not require frequent updates because of its large capacity, so I only gave wfwp the ability to update resolved.dat from github, where it is updated once a month. If there come situations requiring a up to date resolved.dat, it can be generated by manualy running featured.ahk.
+- `wfwp` selects pictures based on the [resolved.dat](https://raw.githubusercontent.com/fjn308/wfwp/main/upload/resolved.dat), which has information on all featured pictures at the time being. It can be generated by the script `featured.ahk`. Normally `resolved.dat` does not require frequent updates because of its large capacity, so I only gave `wfwp` the ability to get `resolved.dat` from GitHub, where it is updated once a month. If there come situations requiring an up-to-date `resolved.dat`, it can be generated by manualy running `featured.ahk`.
 
-- Except for featured.ahk, there is another script called download.ahk, which can work with featured.ahk to achieve an expanded freedom of selecting and downloading featured pictures. Check [here](https://github.com/fjn308/wfwp/tree/main/scripts) to learn more.
+- Except for `featured.ahk`, there is another script called `download.ahk`, which can work with `featured.ahk` to achieve an expanded freedom of selecting and downloading featured pictures. Check [here](https://github.com/fjn308/wfwp/tree/main/scripts) to learn more.
 
 # 5. Icons and Legal Issues
 
-Except for the wallpapers, which come from [wikimedia commons](https://commons.wikimedia.org/wiki/Main_Page), the icons used in wfwp are also from wikicommons:
+Except for the wallpapers, which come from [Wikimedia Commons](https://commons.wikimedia.org/wiki/Main_Page), the icons used in `wfwp` are also from Wiki Commons:
 
 ```
 commons.ico: https://commons.wikimedia.org/static/favicon/commons.ico
