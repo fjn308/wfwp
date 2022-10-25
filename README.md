@@ -18,9 +18,13 @@ Other notable features include: multiple monitors, blacklisting specific picture
 
 ### 2.3 Multiple Monitors
 
-![general](/screenshots/6.png)
+If there are multiple monitors, a clickable "Which One?" box will appear when **Switch**, **Blacklist**, **Details**, or **Original** button is clicked:
 
-If there are multiple monitors, a clickable "Which One?" box will appear when **Switch**, **Blacklist**, **Details**, or **Original** button is clicked.
+![whichone](/screenshots/6.png)
+
+Here is a real example:
+
+![photo](/screenshots/7.png)
 
 # 3. Things You need to Know
 
