@@ -795,7 +795,7 @@ udtlp(uri, outfile, proxy := false)
             UrlDownloadToFile, %uri%, %outfile%
         Else
         {
-            cmd := """Invoke-WebRequest -Uri " . StrReplace(uri, "&", "'&'") . " -Proxy " . proxy . " -OutFile " . outfile . """"
+            cmd := "Invoke-WebRequest -Uri '" . StrReplace(uri, "'", "''") . "' -Proxy '" . StrReplace(proxy, "'", "''") . "' -OutFile '" . StrReplace(outfile, "'", "''") . "'"
             RunWait, powershell.exe %cmd%, , Hide
         }
         If ErrorLevel
