@@ -2,7 +2,7 @@
 Critical, On
 FileInstall, commons.png, commons.png, 1
 Menu, Tray, Tip, wfwp
-version := "v0.1"
+version := "v0.12"
 If (A_ScriptName = "wfwpnew.exe")
 {
     FileCopy, wfwpnew.exe, wfwp.exe, 1
