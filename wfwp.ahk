@@ -775,7 +775,7 @@ If (version = github)
     MsgBox, No need to update.
     Return
 }
-udtlp("https://github.com/fjn308/wfwp/releases/latest/download/wfwp.exe", "update\wfwp.exe")
+udtlp("https://github.com/fjn308/wfwp/releases/latest/download/wfwp.exe", "update\wfwp.exe", server)
 If ErrorLevel
 {
     FileRemoveDir, update, 1
