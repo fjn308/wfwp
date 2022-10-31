@@ -1,6 +1,7 @@
-﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Critical, On
 FileInstall, commons.png, commons.png, 1
+Menu, Tray, Tip, wfwp
 version := "v0.1"
 If (A_ScriptName = "wfwpnew.exe")
 {
@@ -139,7 +140,7 @@ Menu, Tray, Add, Blacklist ..., :blacklistdotmenu
 Menu, Tray, Add
 Menu, Tray, Add, Re-Detect Monitors (%monitorcount%), detectmenu
 Menu, updatedotmenu, Add, Update the Database (%qualifieddatanumber%/%datfilelength%), updatedatamenu
-Menu, updatedotmenu, Add, Update wfwp, updatewfwpmenu
+Menu, updatedotmenu, Add, Update wfwp (%version%), updatewfwpmenu
 Menu, Tray, Add, Update ..., :updatedotmenu
 If (A_ScriptName = "wfwp.ahk")
     Menu, updatedotmenu, Disable, 2&
