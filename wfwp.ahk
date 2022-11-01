@@ -1,6 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Critical, On
-FileInstall, commons.png, commons.png, 1
 Menu, Tray, Tip, wfwp
 version := "v0.12"
 If (A_ScriptName = "wfwpnew.exe")
@@ -12,16 +11,20 @@ If (A_ScriptName = "wfwpnew.exe")
 Else If (A_ScriptName = "wfwp.exe")
 {
     If FileExist("wfwpnew.exe")
-        MsgBox, wfwp is updated to %version%.
+        TrayTip, , wfwp is updated to %version%.
     FileDelete, wfwpnew.exe
 }
 Else If (A_ScriptName = "wfwp.ahk")
-    Menu, Tray, Icon, commons.ico
+{
+    If  FileExist("commons.ico")
+        Menu, Tray, Icon, commons.ico
+}
 Else
 {
-    MsgBox, My name should be wfwp.exe. I will exit.
+    MsgBox, , wfwp, My name should be wfwp. I will exit.
     ExitApp
 }
+FileInstall, commons.png, commons.png, 1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 monitorcount := countmonitor()
 monitors := []
@@ -45,13 +48,13 @@ Loop, %monitorcount%
 monitorcount := monitors.Length()
 If !monitorcount
 {
-    MsgBox, Monitor detection is failed. wfwp will exit.
+    MsgBox, , wfwp, Failed to detect any monitor. wfwp will exit.
     ExitApp
 }
 If overuhd
-    MsgBox, You have a screen with resolution over UHD (3840*2160), but wfwp will still set UHD wallpapers on it, which may cause a waste.
+    MsgBox, , wfwp, You have a screen with resolution over UHD (3840*2160), but wfwp will still set UHD wallpapers on it, which may cause a waste.
 If setposition()
-    MsgBox, Position setting is failed. Manually setting the display option for wallpapers as FILL is recommended.
+    MsgBox, , wfwp, Failed to set position. wfwp recommends you to set the display option for wallpapers as FILL manually.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 firstrun := false
 If !FileExist("config")
@@ -78,47 +81,42 @@ If ((!firstrun) && (configarray.Length() = 2))
         nextswitch := nextswitchcache
 }
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-fromdatabasecheck := false
-databasecheck:
-If !FileExist("resolved.dat")
-{
-    fromdatabasecheck := true
-    If firstrun
-    {
-        MsgBox, Press Ok to download the database.
-        GoSub, updatedatamenu
-        Goto, databasecheck
-    }
-    MsgBox, 3, Download or Not, The database is missing. Do you want to download it?
-    IfMsgBox Yes
-    {
-        GoSub, updatedatamenu
-        Goto, databasecheck
-    }
-    MsgBox, wfwp will exit.
-    ExitApp
-}
+If firstrun
+    loaddefault(proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
+Else
+    loadconfiguration(configuration, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
+arthropod := extractbit(binaryexclude, 0)
+bird := extractbit(binaryexclude, 1)
+mammal := extractbit(binaryexclude, 2)
+amphibian := extractbit(binaryexclude, 3)
+fish := extractbit(binaryexclude, 4)
+reptile := extractbit(binaryexclude, 5)
+oanimals := extractbit(binaryexclude, 6)
+bone := extractbit(binaryexclude, 7)
+shell := extractbit(binaryexclude, 8)
+plant := extractbit(binaryexclude, 9)
+fungi := extractbit(binaryexclude, 10)
+olifeforms := extractbit(binaryexclude, 11)
+GoSub, snapshot
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 FileDelete, urls.sha1
 moveonlist := 0
 moveonlistreal := -1
-If firstrun
+qualifieddatanumber := 0
+If FileExist("resolved.dat")
 {
-    loaddefault(proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
-    qualifieddatanumber := "?"
-}
-Else
-{
-    loadconfiguration(configuration, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
-    qualifieddatanumber := superdat2sha1("resolved.dat", "urls.sha1", monitortypes, binaryexclude)
-    If !qualifieddatanumber
+    If !firstrun
+        qualifieddatanumber := superdat2sha1("resolved.dat", "urls.sha1", monitortypes, binaryexclude)
+    If qualifieddatanumber
+    {
+        moveonlist := premoveon("urls.sha1", "cache", monitors)
+        superremove("urls.sha1", "cache")
+    }
+    Else
     {
         FileDelete, urls.sha1
         FileDelete, resolved.dat
-        Goto, databasecheck
     }
-    moveonlist := premoveon("urls.sha1", "cache", monitors)
-    superremove("urls.sha1", "cache")
 }
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 datfilelength := countdata("resolved.dat")
@@ -147,19 +145,6 @@ If (A_ScriptName = "wfwp.ahk")
 Menu, Tray, Add, Settings, settingsmenu
 Menu, Tray, Add
 Menu, Tray, Add, Exit, exitmenu
-arthropod := extractbit(binaryexclude, 0)
-bird := extractbit(binaryexclude, 1)
-mammal := extractbit(binaryexclude, 2)
-amphibian := extractbit(binaryexclude, 3)
-fish := extractbit(binaryexclude, 4)
-reptile := extractbit(binaryexclude, 5)
-oanimals := extractbit(binaryexclude, 6)
-bone := extractbit(binaryexclude, 7)
-shell := extractbit(binaryexclude, 8)
-plant := extractbit(binaryexclude, 9)
-fungi := extractbit(binaryexclude, 10)
-olifeforms := extractbit(binaryexclude, 11)
-GoSub, snapshot
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 monitortypecounts := types2countarray(monitortypes)
 numberrestrictions := types2numberrestrictions(monitortypecounts)
@@ -168,8 +153,10 @@ totalnumberrestriction := 0
 Loop, 6
     totalnumberrestriction := totalnumberrestriction + numberrestrictions[A_Index]
 switching := false
-If !firstrun
+If ((!firstrun) && qualifieddatanumber)
 {
+    If !nextswitch
+        moveonlist := 0
     If ((!nextswitch) || moveonlist)
         GoSub, switchmenu
     Else
@@ -177,6 +164,7 @@ If !firstrun
 }
 Else
     GoSub, settingsmenu
+fromdatabasecheck := false
 fromdetails := false
 indexjustclicked := 0
 Critical, Off
@@ -343,27 +331,58 @@ speriodcache := speriod
 Gui, Submit
 GoSub, snapshot
 FileDelete, config
-If firstrun
-    FileAppend, %settings%, config
-Else
+If nextswitch
     FileAppend, %settings%@%nextswitch%, config
-If (firstrun || (binaryexclude != binaryexcludecache))
+Else
+    FileAppend, %settings%, config
+databasecheck:
+If !datfilelength
+{
+    fromdatabasecheck := true
+    If !firstrun
+    {
+        MsgBox, 3, Download or Not, The database is missing. May wfwp download it?
+        IfMsgBox Yes
+        {}
+        Else
+        {
+            MsgBox, , wfwp, wfwp will exit.
+            ExitApp
+        }
+    }
+    Else
+        TrayTip, , It is the first run. wfwp is downloading the database.
+    GoSub, updatedatamenu
+    fromdatabasecheck := false
+    Goto, databasecheck
+}
+firstrun := false
+If ((!qualifieddatanumber) || (binaryexclude != binaryexcludecache))
 {
     qualifieddatanumber := superdat2sha1("resolved.dat", "urls.sha1", monitortypes, binaryexclude)
+    If !qualifieddatanumber
+    {
+        FileDelete, urls.sha1
+        FileDelete, resolved.dat
+        datfilelength := 0
+        Goto, databasecheck
+    }
+    Else
+        Menu, updatedotmenu, Rename, 1&, Update the Database (%qualifieddatanumber%/%datfilelength%)
     refrencenewlists := true
-    Menu, updatedotmenu, Rename, 1&, Update the Database (%qualifieddatanumber%/%datfilelength%)
     moveonlist := premoveon("urls.sha1", "cache", monitors)
     superremove("urls.sha1", "cache")
 }
-If (firstrun || moveonlist)
+If !nextswitch
+    moveonlist := 0
+If ((!nextswitch) || moveonlist)
     GoSub, switchmenu
-Else If (speriod != speriodcache)
+Else
 {
     sperioddelta := speriod - speriodcache
     EnvAdd, nextswitch, sperioddelta, Seconds
     resumetimer("switchmenu", nextswitch)
 }
-firstrun := false
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 restorebutton:
@@ -712,7 +731,7 @@ Return
 updatedatamenu:
 reupdatedat:
 FileCreateDir, update
-udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/sha256andtimestamp.log", "update\sha256andtimestamp.log")
+udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/sha256andtimestamp.log", "update\sha256andtimestamp.log", server)
 If ErrorLevel
 {
     FileRemoveDir, update, 1
@@ -731,11 +750,11 @@ If !fromdatabasecheck
     If (timestamplocal >= timestampremote)
     {
         FileRemoveDir, update, 1
-        MsgBox, No need to update.
+        TrayTip, , No need to update.
         Return
     }
 }
-udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/resolved.dat", "update\reference.dat")
+udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/resolved.dat", "update\reference.dat", server)
 If ErrorLevel
 {
     FileRemoveDir, update, 1
@@ -744,24 +763,22 @@ If ErrorLevel
 If (sha256("update\reference.dat") != sha256)
 {
     FileRemoveDir, update, 1
-    MsgBox, 5, Update Error, SHA-256 does not match. reference.dat is broken. Retry or cancel?
+    MsgBox, 5, Update Error, SHA-256 does not match. Retry or Cancel?
     IfMsgBox, Retry
         Goto, reupdatedat
-    MsgBox, wfwp will exit.
+    MsgBox, , wfwp, wfwp will exit.
     ExitApp
 }
 FileMove, update\reference.dat, resolved.dat, 1
 FileRemoveDir, update, 1
-If fromdatabasecheck
-    MsgBox, Downloaded.
-Else
-    MsgBox, Updated.
-Reload
+datfilelength := countdata("resolved.dat")
+Menu, updatedotmenu, Rename, 1&, Update the Database (%qualifieddatanumber%/%datfilelength%)
+TrayTip, , Succeed.
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 updatewfwpmenu:
 FileCreateDir, update
-udtlp("https://api.github.com/repos/fjn308/wfwp/releases/latest", "update\github.json")
+udtlp("https://api.github.com/repos/fjn308/wfwp/releases/latest", "update\github.json", server)
 If ErrorLevel
 {
     FileRemoveDir, update, 1
@@ -772,7 +789,7 @@ github := jsonmatch(github, "tag_name", ".*?[0-9v.]+")
 If (version = github)
 {
     FileRemoveDir, update, 1
-    MsgBox, No need to update.
+    TrayTip, , No need to update.
     Return
 }
 udtlp("https://github.com/fjn308/wfwp/releases/latest/download/wfwp.exe", "update\wfwp.exe", server)
@@ -785,7 +802,7 @@ FileGetSize, binsize, update\wfwp.exe
 If (binsize < 4096)
 {
     FileRemoveDir, update, 1
-    MsgBox, wfwp is missing. Update is aborted.
+    TrayTip, , wfwp is missing. Update is aborted.
     Return
 }
 FileMove, update\wfwp.exe, wfwpnew.exe, 1
