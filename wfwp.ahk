@@ -367,8 +367,7 @@ If ((!qualifieddatanumber) || (binaryexclude != binaryexcludecache))
         datfilelength := 0
         Goto, databasecheck
     }
-    Else
-        Menu, updatedotmenu, Rename, 1&, Update the Database (%qualifieddatanumber%/%datfilelength%)
+    Menu, updatedotmenu, Rename, 1&, Update the Database (%qualifieddatanumber%/%datfilelength%)
     refrencenewlists := true
     moveonlist := premoveon("urls.sha1", "cache", monitors)
     superremove("urls.sha1", "cache")
@@ -518,12 +517,9 @@ Loop, %totalnumberrestriction%
     numberrestrictionscache[whichmonitortypeindex] := numberrestrictionscache[whichmonitortypeindex] - 1
     If refrencenewlists
         Goto, randomlistsagain
-    Else
-    {
-        simplefile := simpledownload(oneline, "cache", server)
-        If (moveonlistreal && simplefile)
-            moveonlistreal := randomdisplayothers("cache", monitors, moveonlistreal, true)
-    }
+    simplefile := simpledownload(oneline, "cache", server)
+    If (moveonlistreal && simplefile)
+        moveonlistreal := randomdisplayothers("cache", monitors, moveonlistreal, true)
 }
 FileDelete, temp-random.sha1
 If moveonlistreal
