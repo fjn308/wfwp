@@ -1,4 +1,4 @@
-﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 proxy := false
 server := "http://127.0.0.1:1079"
 restrictioninmb := 16 ; 0 for skipping resizing failures
@@ -61,7 +61,7 @@ Loop, Read, %inputfile%
         {
             If (restrictioninmb = 0)
             {
-                FileAppend, [%A_Now%] [resizing failed] [original  skipped] %url%`r`n, errors.log
+                FileAppend, [%A_Now%] [resizing failed] [original skipped]  %url%`r`n, errors.log
                 Continue
             }
             urlcache := url
@@ -89,7 +89,7 @@ Loop, Read, %inputfile%
                 size := -1
             If (size < restrictioninb)
             {
-                FileAppend, [%A_Now%] [resizing failed] [original  fetched] %urlcache%`r`n, errors.log
+                FileAppend, [%A_Now%] [resizing failed] [original fetched]  %urlcache%`r`n, errors.log
                 RegExMatch(filename, "[0-9a-f]+\.[+-]\.[^.]+", originalfilename)
                 renameto := "download\" . originalfilename
                 Goto, redownload
