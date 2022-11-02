@@ -1,11 +1,11 @@
-﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 proxy := false ; false means following windows
 server := "http://127.0.0.1:1079" ; have to be http
 screenorientation := "+" ; "+"(4:3 <= landscape <= 256:81), "-"(81:256 <= portrait <= 3:4), 0(any)
 minimalresolution := 2 ; 3(uhd+), 2(qhd+), 1(fhd+), 0(any)
 resize := true ; false means writing urls of original pictures (can be extremely large) to the sha1 file
 exclude := "/arthropod,/bird,/amphibian,/reptile,/oanimals,/fungi,/olifeforms"
-; full list: "/arthropod,/bird,/mammal,/amphibian,/fish,/reptile,/oanimals,/bone,/shell,/plant,/fungi,/olifeforms", empty list: ""
+; full list: "/arthropod,/bird,/ppeople,/amphibian,/fish,/reptile,/oanimals,/bone,/shell,/plant,/fungi,/olifeforms", empty list: ""
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 formats := "tif,tiff,jpg,jpeg,png" ; do not edited this unless confident enough
 skipgeneratingdat := false ; true means using an existing resolved.dat
@@ -18,7 +18,8 @@ If proxy
     proxy := server
 If !minimalresolution
     resize := false
-excludeedited := StrReplace(exclude, "/oanimals", "/animalso")
+excludeedited := StrReplace(exclude, "/ppeople", "/people")
+excludeedited := StrReplace(excludeedited, "/oanimals", "/animalso")
 excludeedited := StrReplace(excludeedited, "/olifeforms", "lifeforms")
 binaryexclude := "0x" . category(excludeedited)
 duplicatenumber := "?"
@@ -251,13 +252,13 @@ Loop, Read, temp-titles.log, temp-resolving.dat
             sha1 := jsonmatch(A_LoopReadLine, "sha1", ".*?[0-9a-f]+")
     }
     If !sha1
-        FileAppend, [%A_Now%] [sha1   missing] %imageinfoapi%`r`n, errors.log
+        FileAppend, [%A_Now%] [sha1 missing]   %imageinfoapi%`r`n, errors.log
     Else If !url
-        FileAppend, [%A_Now%] [url    missing] %imageinfoapi%`r`n, errors.log
+        FileAppend, [%A_Now%] [url missing]    %imageinfoapi%`r`n, errors.log
     Else If !size
-        FileAppend, [%A_Now%] [size   missing] %imageinfoapi%`r`n, errors.log
+        FileAppend, [%A_Now%] [size missing]   %imageinfoapi%`r`n, errors.log
     Else If !width
-        FileAppend, [%A_Now%] [width  missing] %imageinfoapi%`r`n, errors.log
+        FileAppend, [%A_Now%] [width missing]  %imageinfoapi%`r`n, errors.log
     Else If !height
         FileAppend, [%A_Now%] [height missing] %imageinfoapi%`r`n, errors.log
     Else
