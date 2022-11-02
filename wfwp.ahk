@@ -87,7 +87,7 @@ Else
     loadconfiguration(configuration, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
 arthropod := extractbit(binaryexclude, 0)
 bird := extractbit(binaryexclude, 1)
-mammal := extractbit(binaryexclude, 2)
+ppeople := extractbit(binaryexclude, 2)
 amphibian := extractbit(binaryexclude, 3)
 fish := extractbit(binaryexclude, 4)
 reptile := extractbit(binaryexclude, 5)
@@ -184,7 +184,7 @@ Else
 nminute := !minute
 speriod := (60 * minute + 60 * 60 * nminute) * frequency
 period := 1000 * speriod
-binaryexclude := (arthropod << 0) + (bird << 1) + (mammal << 2) + (amphibian << 3) + (fish << 4) + (reptile << 5) + (oanimals << 6) + (bone << 7) + (shell << 8) + (plant << 9) + (fungi << 10) + (olifeforms << 11)
+binaryexclude := (arthropod << 0) + (bird << 1) + (ppeople << 2) + (amphibian << 3) + (fish << 4) + (reptile << 5) + (oanimals << 6) + (bone << 7) + (shell << 8) + (plant << 9) + (fungi << 10) + (olifeforms << 11)
 binaryexclude := "0x" . Format("{:04x}", binaryexclude)
 osettings := (proxy << 0) + (ip1 << 1) + (ip2 << 9) + (ip3 << 17) + (ip4 << 25) + (port << 33) + (frequency << 49) + (minute << 55)
 settings := binaryexclude . Format("{:014x}", osettings)
@@ -247,7 +247,7 @@ minutechecked := checked(minute)
 nminutechecked := checked(nminute)
 arthropod := extractbit(binaryexclude, 0)
 bird := extractbit(binaryexclude, 1)
-mammal := extractbit(binaryexclude, 2)
+ppeople := extractbit(binaryexclude, 2)
 amphibian := extractbit(binaryexclude, 3)
 fish := extractbit(binaryexclude, 4)
 reptile := extractbit(binaryexclude, 5)
@@ -259,7 +259,7 @@ fungi := extractbit(binaryexclude, 10)
 olifeforms := extractbit(binaryexclude, 11)
 arthropodchecked := checked(arthropod)
 birdchecked := checked(bird)
-mammalchecked := checked(mammal)
+ppeoplechecked := checked(ppeople)
 amphibianchecked := checked(amphibian)
 fishchecked := checked(fish)
 reptilechecked := checked(reptile)
@@ -301,13 +301,13 @@ Gui, Add, Text, x+0, provided by Microsoft.
 Gui, Tab, 2
 Gui, Add, Text, xm ym
 Gui, Add, Text, xm y+m
-Gui, Add, Text, x+m y+m Section, Some categories of nature pictures may not be suitable as wallpapers, which can be
+Gui, Add, Text, x+m y+m Section, Some specific categories of pictures may not be proper as wallpapers, which can be
 Gui, Add, Text, xs y+m, excluded here (check the list at the bottom of
 Gui, Add, Text, x+0 cblue gwikibutton, ` this page
 Gui, Add, Text, x+0, ` for more infomation):`n
 Gui, Add, CheckBox, xs y+m %arthropodchecked% varthropod, Arthropods ` ` ` ` ` ` `
 Gui, Add, CheckBox, x+m %birdchecked% vbird, Birds ` ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %mammalchecked% vmammal, Mammals
+Gui, Add, CheckBox, x+m %ppeoplechecked% vppeople, Portrait People
 Gui, Add, CheckBox, xs y+m %amphibianchecked% vamphibian, Amphibians ` ` ` ` ` ` `
 Gui, Add, CheckBox, x+m %fishchecked% vfish, Fish ` ` ` ` ` ` ` ` ` ` ` ` `
 Gui, Add, CheckBox, x+m %reptilechecked% vreptile, Reptiles
