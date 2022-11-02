@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Critical, On
 Menu, Tray, Tip, wfwp
-version := "v0.12"
+version := "v0.13"
 If (A_ScriptName = "wfwpnew.exe")
 {
     FileCopy, wfwpnew.exe, wfwp.exe, 1
@@ -307,7 +307,7 @@ Gui, Add, Text, x+0 cblue gwikibutton, ` this page
 Gui, Add, Text, x+0, ` for more infomation):`n
 Gui, Add, CheckBox, xs y+m %arthropodchecked% varthropod, Arthropods ` ` ` ` ` ` `
 Gui, Add, CheckBox, x+m %birdchecked% vbird, Birds ` ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %ppeoplechecked% vppeople, Portrait People
+Gui, Add, CheckBox, x+m Disabled, Mammals
 Gui, Add, CheckBox, xs y+m %amphibianchecked% vamphibian, Amphibians ` ` ` ` ` ` `
 Gui, Add, CheckBox, x+m %fishchecked% vfish, Fish ` ` ` ` ` ` ` ` ` ` ` ` `
 Gui, Add, CheckBox, x+m %reptilechecked% vreptile, Reptiles
@@ -317,6 +317,7 @@ Gui, Add, CheckBox, x+m %shellchecked% vshell, Shells
 Gui, Add, CheckBox, xs y+m %plantchecked% vplant, Plants ` ` ` ` ` ` ` ` ` ` `
 Gui, Add, CheckBox, x+m %fungichecked% vfungi, Fungi ` ` ` ` ` ` ` ` ` ` ` `
 Gui, Add, CheckBox, x+m %olifeformschecked% volifeforms, Other Lifeforms
+Gui, Add, CheckBox, xs y+m %ppeoplechecked% vppeople, Reduce Portraits of People on Portrait (Non-Landscape) Monitors
 Gui, Tab
 Gui, Add, Button, xm y+m ghelpbutton, ` ` ` ` ` Help / About ` ` ` `
 Gui, Add, Button, x+m grestorebutton, ` ` Restore to Default `
