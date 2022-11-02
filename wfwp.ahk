@@ -11,7 +11,7 @@ If (A_ScriptName = "wfwpnew.exe")
 Else If (A_ScriptName = "wfwp.exe")
 {
     If FileExist("wfwpnew.exe")
-        TrayTip, , wfwp is updated to %version%.
+        TrayTip, , wfwp is updated to %version%., , 16
     FileDelete, wfwpnew.exe
 }
 Else If (A_ScriptName = "wfwp.ahk")
@@ -352,7 +352,7 @@ If !datfilelength
         }
     }
     Else
-        TrayTip, , It is the first run. wfwp is downloading the database.
+        TrayTip, , It is the first run. wfwp is downloading the database., , 16
     GoSub, updatedatamenu
     fromdatabasecheck := false
     Goto, databasecheck
@@ -422,7 +422,7 @@ If switching
             }
         }
         Else
-            TrayTip, , Monitor #%moveonlist%: Faild to Switch, , 16
+            TrayTip, , Monitor #%moveonlist% faild to switch., , 16
     }
     Return
 }
@@ -528,7 +528,7 @@ Loop, %totalnumberrestriction%
 }
 FileDelete, temp-random.sha1
 If moveonlistreal
-    TrayTip, , Monitor #%moveonlistreal%: Faild to Switch, , 16
+    TrayTip, , Monitor #%moveonlistreal% faild to switch., , 16
 moveonlistreal := -1
 switching := false
 Menu, Tray, Tip, wfwp
@@ -651,7 +651,7 @@ If !switchbackto
     FileAppend, %lastline%`r`n, blacklist
     blacklistlength := blacklistlength + 1
     Menu, blacklistdotmenu, Rename, 1&, Blacklist This Picture and Switch to the Next (%blacklistlength%)
-    TrayTip, , Failed to Download. The Blacklist Remains Untouched., , 16
+    TrayTip, , Failed to download. The blacklist remains untouched., , 16
     Return
 }
 readyformatch := 0
@@ -666,16 +666,13 @@ Loop, %monitorcount%
     }
 }
 switchbackto := A_ScriptDir . "\" . switchbackto
-If readyformatch
+If (!readyformatch || switchwallpaper(switchbackto, monitors, readyformatch))
 {
-    If switchwallpaper(switchbackto, monitors, readyformatch)
-    {
-        TrayTip, , Failed to Display. The Blacklist Remains Untouched., , 16
-        FileAppend, %lastline%`r`n, blacklist
-        blacklistlength := blacklistlength + 1
-        Menu, blacklistdotmenu, Rename, 1&, Blacklist This Picture and Switch to the Next (%blacklistlength%)
-    }
+    TrayTip, , Failed to display. The blacklist remains untouched., , 16
+    FileAppend, %lastline%`r`n, blacklist
+    blacklistlength := blacklistlength + 1
 }
+Menu, blacklistdotmenu, Rename, 1&, Blacklist This Picture and Switch to the Next (%blacklistlength%)
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 clearblacklistmenu:
