@@ -427,7 +427,10 @@ If switching
     Return
 }
 Else
+{
     switching := true
+    Menu, Tray, Tip, switching
+}
 If !moveonlist
 {
     SetTimer, switchmenu, %period%
@@ -448,11 +451,12 @@ numberrestrictionscache := ""
 numberrestrictionscache := []
 sizerestrictionscache := ""
 sizerestrictionscache := []
+sparesapces := ""
+sparesapces := []
 arraypm(numberrestrictionscache, numberrestrictions)
 arraypm(sizerestrictionscache, sizerestrictions)
-sparesapces := ""
+arraypm(sparesapces, sizerestrictionscache)
 linenumbers := ""
-sparesapces := [0, 0, 0, 0, 0, 0]
 linenumbers := [0, 0, 0, 0, 0, 0]
 Loop, %totalnumberrestriction%
 {
@@ -527,6 +531,7 @@ If moveonlistreal
     TrayTip, , Monitor #%moveonlistreal%: Faild to Switch, , 16
 moveonlistreal := -1
 switching := false
+Menu, Tray, Tip, wfwp
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 blacklistmenu:
