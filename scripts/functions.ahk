@@ -1,4 +1,4 @@
-﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 countmonitor()
 {
     idesktopwallpaper := ComObjCreate("{C2CF3110-460E-4fc1-B9D0-8A1C0C9CC4BD}", "{B92B56A9-8B55-4E14-9A89-0199BBB6F93B}")
@@ -238,13 +238,13 @@ byte2hex(byte)
 }
 category(list)
 {
-    arthropod := 0, bird := 0, mammal := 0, amphibian := 0, fish := 0, reptile := 0, oanimals := 0, bone := 0, shell := 0, plant := 0, fungi := 0, olifeforms := 0
+    arthropod := 0, bird := 0, people := 0, amphibian := 0, fish := 0, reptile := 0, oanimals := 0, bone := 0, shell := 0, plant := 0, fungi := 0, olifeforms := 0
     If InStr(list, "/arthropod")
         arthropod := 1
     If InStr(list, "/bird")
         bird := 1
-    If InStr(list, "/mammal")
-        mammal := 1
+    If InStr(list, "/people")
+        people := 1
     If InStr(list, "/amphibian")
         amphibian := 1
     If InStr(list, "/fish")
@@ -263,7 +263,7 @@ category(list)
         fungi := 1
     If InStr(list, "lifeforms")
         olifeforms := 1
-    category := (arthropod << 0) + (bird << 1) + (mammal << 2) + (amphibian << 3) + (fish << 4) + (reptile << 5) + (oanimals << 6) + (bone << 7) + (shell << 8) + (plant << 9) + (fungi << 10) + (olifeforms << 11)
+    category := (arthropod << 0) + (bird << 1) + (people << 2) + (amphibian << 3) + (fish << 4) + (reptile << 5) + (oanimals << 6) + (bone << 7) + (shell << 8) + (plant << 9) + (fungi << 10) + (olifeforms << 11)
     Return, Format("{:04x}", category)
 }
 checked(key)
@@ -353,8 +353,12 @@ dat2sha1(datfile, sha1file, append := false, orientation := "+", minimalresoluti
             Continue
         RegExMatch(A_LoopReadLine, "category = 0x[0-9a-f]+", category)
         category := StrReplace(category, "category = ")
-        If (category & binaryexclude != 0)
-            Continue
+        probe := category & binaryexclude
+        If (probe != 0)
+        {
+            If ((!InStr(A_LoopReadLine, "orientation = -")) || (probe != 1 << 2))
+                Continue
+        }
         qualifiednumberdelta := qualifiednumberdelta + 1
         RegExMatch(A_LoopReadLine, "url = "".*?""", url)
         url := Trim(StrReplace(url, "url = "), """")
@@ -561,7 +565,7 @@ loaddefault(ByRef proxy, ByRef ip1, ByRef ip2, ByRef ip3, ByRef ip4, ByRef port,
 {
     proxy := 0, ip1 := 255, ip2 := 255, ip3 := 255, ip4 := 255, port := 65535
     frequency := 30, minute := 1, nminute := !minute
-    inputexclude := "/arthropod,/bird,/amphibian,/reptile,/oanimals,/fungi,/olifeforms", inputexclude := StrReplace(inputexclude, "/oanimals", "/animalso"), inputexclude := StrReplace(inputexclude, "/olifeforms", "lifeforms"), binaryexclude := "0x" . category(inputexclude)
+    inputexclude := "/arthropod,/bird,/amphibian,/reptile,/animalso,/fungi,lifeforms", binaryexclude := "0x" . category(inputexclude)
 }
 matches(monitortype, ByRef match1 := "", ByRef match2 := "")
 {
@@ -800,6 +804,13 @@ udtlp(uri, outfile, proxy := false)
         }
         If ErrorLevel
         {
+            If (InStr(A_ScriptName, ".ahk") && (A_Index = 2))
+            {
+                If proxy
+                    FileAppend, powershell.exe %cmd%`r`n, downloaderror.log
+                Else
+                    FileAppend, UrlDownloadToFile`, %uri%`, %outfile%`r`n, downloaderror.log
+            }
             MsgBox, 5, Download Error, Retry or Cancel?
             IfMsgBox Cancel
                 Break
