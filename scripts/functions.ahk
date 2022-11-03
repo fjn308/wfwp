@@ -251,7 +251,7 @@ category(list)
         fish := 1
     If InStr(list, "/reptile")
         reptile := 1
-    If RegExMatch(list, "/animals[^/]")
+    If RegExMatch(list, "/[Aa]nimals[^/]")
         oanimals := 1
     If InStr(list, "/bone")
         bone := 1
@@ -799,7 +799,7 @@ udtlp(uri, outfile, proxy := false)
             UrlDownloadToFile, %uri%, %outfile%
         Else
         {
-            cmd := "Invoke-WebRequest -Uri '" . StrReplace(uri, "'", "''") . "' -Proxy '" . StrReplace(proxy, "'", "''") . "' -OutFile '" . StrReplace(outfile, "'", "''") . "'"
+            cmd := "Invoke-WebRequest -Uri '" . uri . "' -Proxy '" . proxy . "' -OutFile '" . outfile . "'"
             RunWait, powershell.exe %cmd%, , Hide
         }
         If ErrorLevel
@@ -822,7 +822,7 @@ udtlp(uri, outfile, proxy := false)
 }
 unicodeplus(string, wiki := false)
 {
-    string := StrReplace(string, "%", "%25"), string := StrReplace(string, " ", "%20"), string := StrReplace(string, "&", "%26"), string := StrReplace(string, "+", "%2b")
+    string := StrReplace(string, "%", "%25"), string := StrReplace(string, " ", "%20"), string := StrReplace(string, "&", "%26"), string := StrReplace(string, "+", "%2b"), string := StrReplace(string, "'", "%27"), string := StrReplace(string, """", "%22"), string := StrReplace(string, "``", "%60")
     Loop
     {
         If !RegExMatch(string, "\\u[0-9a-f][0-9a-f][0-9a-f][0-9a-f]", transfrom)
