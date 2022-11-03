@@ -5,7 +5,7 @@ screenorientation := "+" ; "+"(4:3 <= landscape <= 256:81), "-"(81:256 <= portra
 minimalresolution := 2 ; 3(uhd+), 2(qhd+), 1(fhd+), 0(any)
 resize := true ; false means writing urls of original pictures (can be extremely large) to the sha1 file
 exclude := "/arthropod,/bird,/amphibian,/reptile,/oanimals,/fungi,/olifeforms"
-; full list: "/arthropod,/bird,/ppeople,/amphibian,/fish,/reptile,/oanimals,/bone,/shell,/plant,/fungi,/olifeforms", empty list: ""
+; full list: "/arthropod,/bird,/ppeople,/amphibian,/fish,/reptile,/oanimals,/bone,/shell,/plant,/fungi,/olifeforms", default list: "/arthropod,/bird,/amphibian,/reptile,/oanimals,/fungi,/olifeforms", empty list: ""
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 formats := "tif,tiff,jpg,jpeg,png" ; do not edited this unless confident enough
 skipgeneratingdat := false ; true means using an existing resolved.dat
@@ -106,7 +106,7 @@ Loop
         numberedjson := "temp-titles\" . year . aorb . "-" . pagenumber . ".json"
         FileMove, %halfyearjson%, %numberedjson%, 1
         pagenumber := pagenumber + 1
-        continuekeyvalue := jsonmatch(checkcontinue, "imcontinue", ".*?[a-z]""")
+        continuekeyvalue := jsonmatch(checkcontinue, "imcontinue", "[: ]+"".*?[^\\]""")
         continuekeyvalue := unicodeplus(continuekeyvalue, true)
         continuekeyvalue := "&imcontinue=" . continuekeyvalue
         imagesapi := imagesapicache . continuekeyvalue
@@ -158,7 +158,7 @@ Loop, Files, temp-titles\*.json
 FileRemoveDir, temp-titles, 1
 FileRead, temptitles, temp-titles.log
 FileDelete, temp-titles.log
-Sort, temptitles, U
+Sort, temptitles, C U
 duplicatenumber := Errorlevel
 FileAppend, %temptitles%, temp-titles.log
 If update
@@ -179,7 +179,7 @@ If update
     {
         progress := progress + 1
         Menu, Tray, Tip, preparing: %progress%/%totalnumbercache%
-        If InStr(tempreference, A_LoopReadLine)
+        If InStr(tempreference, A_LoopReadLine, true)
             Continue
         totalnumber := totalnumber + 1
         FileAppend, %A_LoopReadLine%`r`n
@@ -215,6 +215,7 @@ If update
     }
 }
 totalsize := 0
+missingnumber := 0
 progress := 0
 startat := A_Now
 Loop, Read, temp-titles.log, temp-resolving.dat
@@ -246,8 +247,8 @@ Loop, Read, temp-titles.log, temp-resolving.dat
             width := jsonmatch(A_LoopReadLine, "width", ".*?[0-9]+")
         If jsonmatch(A_LoopReadLine, "height", ".*?[0-9]+")
             height := jsonmatch(A_LoopReadLine, "height", ".*?[0-9]+")
-        If jsonmatch(A_LoopReadLine, "url", ".*?[a-z]""")
-            url := jsonmatch(A_LoopReadLine, "url", ".*?[a-z]""")
+        If jsonmatch(A_LoopReadLine, "url", ".*?"".*?""")
+            url := jsonmatch(A_LoopReadLine, "url", ".*?"".*?""")
         If jsonmatch(A_LoopReadLine, "sha1", ".*?[0-9a-f]+")
             sha1 := jsonmatch(A_LoopReadLine, "sha1", ".*?[0-9a-f]+")
     }
@@ -263,6 +264,8 @@ Loop, Read, temp-titles.log, temp-resolving.dat
         FileAppend, [%A_Now%] [height missing] %imageinfoapi%`r`n, errors.log
     Else
         Goto, notcontinue
+    missingnumber := missingnumber + 1
+    progress := progress + 1
     Continue
     notcontinue:
     maxsize := Max(size, maxsize)
@@ -305,6 +308,7 @@ Loop, Read, temp-titles.log, temp-resolving.dat
     Menu, Tray, Tip, %progress%/%totalnumber%-%countdown%
     totalsize := totalsize + size
 }
+totalnumber := totalnumber - missingnumber
 maxsize := StrLen(maxsize)
 maxwidth := StrLen(maxwidth)
 maxheight := StrLen(maxheight)
