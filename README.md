@@ -1,6 +1,6 @@
 # 1. Introduction
 
-`wfwp` is a wallpaper displayer for windows. Using [Wikimedia Commons](https://commons.wikimedia.org/wiki/Main_Page) as its wallpaper source, `wfwp` detects orientations and resolutions of your monitors, automatically selects suitable pictures from over 15,000 high-quality [Featured Pictures](https://commons.wikimedia.org/wiki/Commons:Featured_pictures), and change them as your wallpaper at a given frequency.
+`wfwp` is a wallpaper displayer for Windows. Using [Wikimedia Commons](https://commons.wikimedia.org/wiki/Main_Page) as its wallpaper source, `wfwp` detects orientations and resolutions of your monitors, automatically selects suitable pictures from over 15,000 high-quality [Featured Pictures](https://commons.wikimedia.org/wiki/Commons:Featured_pictures), and change them as your wallpaper at a given frequency.
 
 Other notable features include: supporting multiple monitors, blacklisting specific pictures or excluding specific categories of pictures, manually switching over pictures, downloading or checking details of original pictures, and HTTP proxy for people who have [limited access to Wikipedia](https://en.wikipedia.org/wiki/Censorship_of_Wikipedia).
 
@@ -31,9 +31,9 @@ Here is a real example:
 - `wfwp` assumes that aspect ratios of monitors are around 16:9, that is, for landscape monitors, it selects wallpapers from the pictures with ratios between 4:3 and 256:81; while for portrait monitors, the ratios would be between 256:81 and 3:4.
 
 - `wfwp` caches pictures to ensure smooth switches. For each monitor, there is an independent limitation on its cache:
-  - resolution smaller or equal to FHD (1920*1080): ~9MB FHD pictures resized from higher resolution ones;
-  - resolution smaller or equal to QHD (2560*1440, aka 2K) but over FHD: ~16MB QHD pictures resized from higher resolution ones;
-  - resolution smaller or equal to UHD (3840*2160, aka 4K) but over QHD: ~36MB UHD pictures resized from higher resolution ones.
+  - Resolution smaller or equal to FHD (1920*1080): ~9MB FHD pictures resized from higher resolution ones;
+  - Resolution smaller or equal to QHD (2560*1440, aka 2K) but over FHD: ~16MB QHD pictures resized from higher resolution ones;
+  - Resolution smaller or equal to UHD (3840*2160, aka 4K) but over QHD: ~36MB UHD pictures resized from higher resolution ones.
 
 - `wfwp` treats monitors with resolutions larger than UHD as UHD for now, to ensure performance. If you have such monitors, sorry :(
 
