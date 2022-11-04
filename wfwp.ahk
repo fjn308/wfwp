@@ -771,6 +771,7 @@ If (sha256("update\reference.dat") != sha256)
 FileMove, update\reference.dat, resolved.dat, 1
 FileRemoveDir, update, 1
 datfilelength := countdata("resolved.dat")
+qualifieddatanumber := superdat2sha1("resolved.dat", "urls.sha1", monitortypes, binaryexclude)
 Menu, updatedotmenu, Rename, 1&, Update the Database (%qualifieddatanumber%/%datfilelength%)
 TrayTip, , Succeed.
 Return
