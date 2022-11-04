@@ -43,7 +43,7 @@ Here is a real example:
 
 Download the `wfwp.exe` from [Releases](https://github.com/fjn308/wfwp/releases) and put it into a proper folder, where `wfwp` can generate configuration or other files and cache pictures. During the first run, it will download the database (`resolved.dat`, ~5MB) automatically after initial settings are saved. You can also manually download the database [here](https://raw.githubusercontent.com/fjn308/wfwp/main/upload/resolved.dat) and put it into the same folder before running `wfwp`.
 
-If your network is limited to accessing GitHub or Wikipedia, an HTTP proxy has to be set up and configured.
+If your network is limited to accessing GitHub or Wikipedia, an proxy has to be set up. You can then configure it in the wfwp settings menu (only HTTP proxies are supported), or in the settings of Windows. For the latter, wfwp follows the proxy settings of your system and performs better.
 
 # 5. Things You May Want to Know
 
