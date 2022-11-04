@@ -910,8 +910,8 @@ Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 specifypbutton:
 downloadfoldercachecache := downloadfoldercache
-If downloadfolder
-    FileSelectFolder, downloadfoldercache, *%downloadfolder%, , wfwp: Select Folder
+If downloadfoldercachecache
+    FileSelectFolder, downloadfoldercache, *%downloadfoldercachecache%, , wfwp: Select Folder
 Else
     FileSelectFolder, downloadfoldercache, *%A_ScriptDir%, , wfwp: Select Folder
 If ErrorLevel
