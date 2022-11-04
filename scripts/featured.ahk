@@ -57,7 +57,7 @@ If update
     sha256andtimestamp := StrSplit(sha256andtimestamp, "@")
     sha256forcheck := sha256andtimestamp[1]
     timestamp := sha256andtimestamp[2]
-    If (sha256("reference.dat") != sha256forcheck)
+    If (sha("reference.dat") != sha256forcheck)
     {
         FileDelete, reference.dat
         MsgBox, 5, Update Error, SHA-256 does not match. reference.dat is broken. Retry or cancel?
@@ -365,7 +365,7 @@ If (upload && (!skipgeneratingdat))
 {
     FileRemoveDir, upload, 1
     FileCreateDir, upload
-    sha256forupload := sha256("resolved.dat")
+    sha256forupload := sha("resolved.dat")
     FileAppend, %sha256forupload%@%generateat%, upload\sha256andtimestamp.log
     FileCopy, resolved.dat, upload\resolved.dat, 1
     MsgBox, Upload is ready.
