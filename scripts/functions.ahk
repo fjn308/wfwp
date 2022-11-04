@@ -625,23 +625,27 @@ resumetimer(timer, ringtime)
         SetTimer, %timer%, %ringtime%
     }
 }
-sha256(file)
+sha(file, sha1 := false)
 {
-    sha256 := ""
-    RunWait, powershell.exe Get-FileHash -Algorithm SHA256 -Path %file% | Select-Object -Property Hash | Out-File -FilePath temp-sha256.log, , Hide
-    Loop, Read, temp-sha256.log
+    sha := ""
+    file := "'" . StrReplace(file, "'", "''") . "'"
+    If sha1
+        RunWait, powershell.exe Get-FileHash -Algorithm SHA1 -Path %file% | Select-Object -Property Hash | Out-File -FilePath temp-sha.log, , Hide
+    Else
+        RunWait, powershell.exe Get-FileHash -Algorithm SHA256 -Path %file% | Select-Object -Property Hash | Out-File -FilePath temp-sha.log, , Hide
+    Loop, Read, temp-sha.log
     {
         realline := Trim(A_LoopReadLine)
         If (realline = "")
             Continue
         If realline Is xdigit
-            sha256 := realline
+            sha := realline
     }
-    FileDelete, temp-sha256.log
-    If (sha256 = "")
+    FileDelete, temp-sha.log
+    If (sha = "")
         Return, 0
-    StringLower, sha256, sha256
-    Return, sha256
+    StringLower, sha, sha
+    Return, sha
 }
 simpledownload(oneline, folder, proxy := false, mute := true)
 {
