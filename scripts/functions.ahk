@@ -302,7 +302,10 @@ countdata(datfile)
         Return, 0
     count := 0
     Loop, Read, %datfile%
-        count := A_Index
+    {
+        If InStr(A_LoopReadLine, "sha1 =")
+            count := count + 1
+    }
     Return, count
 }
 countdown(seconds)
@@ -640,7 +643,7 @@ sha256(file)
     StringLower, sha256, sha256
     Return, sha256
 }
-simpledownload(oneline, folder, proxy := false)
+simpledownload(oneline, folder, proxy := false, mute := true)
 {
     RegExMatch(oneline, "[^ ]+", filename)
     RegExMatch(oneline, "https://.*", url)
@@ -648,7 +651,7 @@ simpledownload(oneline, folder, proxy := false)
     If FileExist(renameto)
         Return, renameto
     Else
-        udtlp(url, renameto, proxy)
+        udtlp(url, renameto, proxy, mute)
     If ErrorLevel
         Return, 0
     Else
@@ -791,7 +794,7 @@ types2sizerestrictions(countarray)
     sizearray[6] := 36 * 1024 * 1024 * countarray[6]
     Return, sizearray
 }
-udtlp(uri, outfile, proxy := false)
+udtlp(uri, outfile, proxy := false, mute := false)
 {
     Loop
     {
@@ -811,6 +814,8 @@ udtlp(uri, outfile, proxy := false)
                 Else
                     FileAppend, UrlDownloadToFile`, %uri%`, %outfile%`r`n, downloaderror.log
             }
+            If mute
+                Break
             MsgBox, 5, Download Error, Retry or Cancel?
             IfMsgBox Cancel
                 Break
