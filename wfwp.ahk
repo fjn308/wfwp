@@ -377,10 +377,7 @@ Else
     FileAppend, %settings%, config
 downloadfolder := downloadfoldercache
 FileDelete, download\redirect
-If !downloadfoldercache
-    Goto, databasecheck
-FileCreateDir, %downloadfoldercache%
-If !ErrorLevel
+If downloadfoldercache
 {
     FileCreateDir, download
     FileAppend, %downloadfolder%, download\redirect
@@ -792,6 +789,7 @@ Else
     Else
         targetfolder := A_ScriptDir . "\download"
 }
+FileCreateDir, %targetfolder%
 targetfile := targetfolder . "\" . originalname
 Menu, Tray, Tip, downloading
 udtlp(originalurl, targetfile, server)
