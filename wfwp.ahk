@@ -153,6 +153,20 @@ totalnumberrestriction := 0
 Loop, 6
     totalnumberrestriction := totalnumberrestriction + numberrestrictions[A_Index]
 switching := false
+If FileExist("download\redirect")
+{
+    FileRead, downloadfolder, download\redirect
+    FileCreateDir, %downloadfolder%
+    If ErrorLevel
+    {
+        downloadfolder := A_ScriptDir . "\download"
+        FileDelete, download\redirect
+    }
+}
+Else If FileExist("download")
+    downloadfolder := A_ScriptDir . "\download"
+Else
+    downloadfolder := 0
 If ((!firstrun) && qualifieddatanumber)
 {
     If !nextswitch
@@ -164,8 +178,10 @@ If ((!firstrun) && qualifieddatanumber)
 }
 Else
     GoSub, settingsmenu
+fromselectfolder := false
 fromdatabasecheck := false
 fromdetails := false
+fromoriginal := false
 indexjustclicked := 0
 Critical, Off
 Thread, NoTimers
@@ -242,6 +258,26 @@ Gui, Destroy
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 settingsmenu:
+If !fromselectfolder
+    downloadfoldercache := downloadfolder
+If downloadfoldercache
+{
+    downloadfolderforshow := downloadfoldercache
+    pathlength := StrLen(downloadfolderforshow)
+    If (pathlength > 32)
+    {
+        downloadfolderforshow := SubStr(downloadfolderforshow, -28)
+        firstslash := InStr(downloadfolderforshow, "\")
+        If firstslash
+            downloadfolderforshow := SubStr(downloadfolderforshow, firstslash)
+        downloadfolderforshow := "..." . downloadfolderforshow
+    }
+}
+Else
+    downloadfolderforshow := "Not Specified"
+blanklength := 32 - StrLen(downloadfolderforshow)
+Loop, %blanklength%
+    downloadfolderforshow := downloadfolderforshow . " "
 proxychecked :=checked(proxy)
 minutechecked := checked(minute)
 nminutechecked := checked(nminute)
@@ -294,6 +330,9 @@ Gui, Add, Text, x+m, ` `
 Gui, Add, Radio, x+m %minutechecked% vminute, Minuetes
 Gui, Add, Radio, x+m %nminutechecked% vnminute, Hours ` ` `
 Gui, Add, Text, xm y+m
+Gui, Add, Text, x+m y+m, Save Originals into:
+Gui, Add, Text, x+m cblue gspecifypbutton, %downloadfolderforshow%
+Gui, Add, Text, xm y+m
 Gui, Add, Text, x+m y+m Section, If you want to add wfwp to run automatically at startup, you may follow
 Gui, Add, Text, x+0 cblue gmsbutton, ` this
 Gui, Add, Text, xs y+m cblue gmsbutton, guidance `
@@ -336,6 +375,16 @@ If nextswitch
     FileAppend, %settings%@%nextswitch%, config
 Else
     FileAppend, %settings%, config
+downloadfolder := downloadfoldercache
+FileDelete, download\redirect
+If !downloadfoldercache
+    Goto, databasecheck
+FileCreateDir, %downloadfoldercache%
+If !ErrorLevel
+{
+    FileCreateDir, download
+    FileAppend, %downloadfolder%, download\redirect
+}
 databasecheck:
 If !datfilelength
 {
@@ -390,7 +439,10 @@ GoSub, snapshot
 settingscache := StrReplace(settings, "0x")
 Gui, Destroy
 loaddefault(proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
+downloadfoldercache := 0
+fromselectfolder := true
 GoSub, settingsmenu
+fromselectfolder := false
 loadconfiguration(settingscache, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -717,10 +769,41 @@ Loop, Read, urls.sha1
 If !originalline
     Return
 RegExMatch(originalline, "https://.*", originalurl)
+RegExMatch(originalline, "[0-9a-f]+\.[+-]\.[^.]+", originalname)
 removethumb(originalurl)
 If fromdetails
     fromdetails := false, originalurl := RegExReplace(originalurl, "https://upload.wikimedia.org/wikipedia/commons/[0-9a-f]+/[0-9a-f]+/", "https://commons.wikimedia.org/wiki/File:")
-Run, %originalurl%
+If downloadfolder
+    targetfolder := downloadfolder
+Else
+{
+    downloadfoldercache := 0
+    fromoriginal := true
+    GoSub, specifypbutton
+    fromoriginal := false
+    If downloadfoldercache
+    {
+        downloadfolder := downloadfoldercache
+        targetfolder := downloadfolder
+        FileDelete, download\redirect
+        FileCreateDir, download
+        FileAppend, %downloadfolder%, download\redirect
+    }
+    Else
+        targetfolder := A_ScriptDir . "\download"
+}
+targetfile := targetfolder . "\" . originalname
+Menu, Tray, Tip, downloading
+udtlp(originalurl, targetfile, server)
+If ErrorLevel
+    TrayTip, , Failed., , 16
+Else If (sha(targetfile, true) != originalsha1)
+{
+    FileDelete, %targetfile%
+    TrayTip, , Failed., , 16
+}
+Else
+    TrayTip, , Succeed., , 16
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 detectmenu:
@@ -749,7 +832,7 @@ If !fromdatabasecheck
     If (timestamplocal >= timestampremote)
     {
         FileRemoveDir, update, 1
-        TrayTip, , No need to update.
+        TrayTip, , No need to update., , 16
         Return
     }
 }
@@ -759,7 +842,7 @@ If ErrorLevel
     FileRemoveDir, update, 1
     Return
 }
-If (sha256("update\reference.dat") != sha256)
+If (sha("update\reference.dat") != sha256)
 {
     FileRemoveDir, update, 1
     MsgBox, 5, Update Error, SHA-256 does not match. Retry or Cancel?
@@ -773,7 +856,7 @@ FileRemoveDir, update, 1
 datfilelength := countdata("resolved.dat")
 qualifieddatanumber := superdat2sha1("resolved.dat", "urls.sha1", monitortypes, binaryexclude)
 Menu, updatedotmenu, Rename, 1&, Update the Database (%qualifieddatanumber%/%datfilelength%)
-TrayTip, , Succeed.
+TrayTip, , Succeed., , 16
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 updatewfwpmenu:
@@ -789,7 +872,7 @@ github := jsonmatch(github, "tag_name", ".*?[0-9v.]+")
 If (version = github)
 {
     FileRemoveDir, update, 1
-    TrayTip, , No need to update.
+    TrayTip, , No need to update., , 16
     Return
 }
 udtlp("https://github.com/fjn308/wfwp/releases/latest/download/wfwp.exe", "update\wfwp.exe", server)
@@ -802,7 +885,7 @@ FileGetSize, binsize, update\wfwp.exe
 If (binsize < 4096)
 {
     FileRemoveDir, update, 1
-    TrayTip, , wfwp is missing. Update is aborted.
+    TrayTip, , wfwp is missing. Update is aborted., , 16
     Return
 }
 FileMove, update\wfwp.exe, wfwpnew.exe, 1
@@ -825,6 +908,27 @@ Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 wikibutton:
 Run, https://commons.wikimedia.org/wiki/Commons:Featured_pictures
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+specifypbutton:
+downloadfoldercachecache := downloadfoldercache
+FileSelectFolder, downloadfoldercache, , , wfwp: Select Folder
+If ErrorLevel
+{
+    downloadfoldercache := downloadfoldercachecache
+    Return
+}
+If fromoriginal
+    Return
+GoSub, snapshot
+settingscache := StrReplace(settings, "0x")
+Gui, Submit
+GoSub, snapshot
+Gui, Destroy
+fromselectfolder := true
+GoSub, settingsmenu
+fromselectfolder := false
+loadconfiguration(settingscache, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #Include, scripts\functions.ahk
