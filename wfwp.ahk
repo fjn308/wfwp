@@ -474,7 +474,7 @@ If switching
             }
         }
         Else
-            TrayTip, , Monitor #%moveonlist% faild to switch., , 16
+            TrayTip, , Monitor #%moveonlist% failed to switch., , 16
     }
     Return
 }
@@ -580,7 +580,7 @@ Loop, %totalnumberrestriction%
 }
 FileDelete, temp-random.sha1
 If moveonlistreal
-    TrayTip, , Monitor #%moveonlistreal% faild to switch., , 16
+    TrayTip, , Monitor #%moveonlistreal% failed to switch., , 16
 moveonlistreal := -1
 switching := false
 Menu, Tray, Tip, wfwp
