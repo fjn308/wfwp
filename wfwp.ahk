@@ -149,6 +149,7 @@ Menu, Tray, Add, Exit, exitmenu
 monitortypecounts := types2countarray(monitortypes)
 numberrestrictions := types2numberrestrictions(monitortypecounts)
 sizerestrictions := types2sizerestrictions(monitortypecounts)
+timerestrictions := [21, 21, 25, 25, 38, 38]
 totalnumberrestriction := 0
 Loop, 6
     totalnumberrestriction := totalnumberrestriction + numberrestrictions[A_Index]
@@ -356,7 +357,8 @@ Gui, Add, CheckBox, x+m %shellchecked% vshell, Shells
 Gui, Add, CheckBox, xs y+m %plantchecked% vplant, Plants ` ` ` ` ` ` ` ` ` ` `
 Gui, Add, CheckBox, x+m %fungichecked% vfungi, Fungi ` ` ` ` ` ` ` ` ` ` ` `
 Gui, Add, CheckBox, x+m %olifeformschecked% volifeforms, Other Lifeforms
-Gui, Add, CheckBox, xs y+m %ppeoplechecked% vppeople, Reduce Portraits of People on Portrait (Non-Landscape) Monitors
+Gui, Add, Text, xm y+m
+Gui, Add, CheckBox, x+m y+m %ppeoplechecked% vppeople, Reduce Portraits of People on Portrait (Non-Landscape) Monitors
 Gui, Tab
 Gui, Add, Button, xm y+m ghelpbutton, ` ` ` ` ` Help / About ` ` ` `
 Gui, Add, Button, x+m grestorebutton, ` ` Restore to Default `
@@ -571,7 +573,7 @@ Loop, %totalnumberrestriction%
     numberrestrictionscache[whichmonitortypeindex] := numberrestrictionscache[whichmonitortypeindex] - 1
     If refrencenewlists
         Goto, randomlistsagain
-    simplefile := simpledownload(oneline, "cache", server)
+    simplefile := simpledownload(oneline, "cache", server, timerestrictions[whichmonitortypeindex])
     If (moveonlistreal && simplefile)
         moveonlistreal := randomdisplayothers("cache", monitors, moveonlistreal, true)
 }
@@ -694,7 +696,7 @@ If !switchbackto
     Menu, blacklistdotmenu, Rename, 1&, Blacklist This Picture and Switch to the Next (%blacklistlength%)
     Return
 }
-switchbackto := simpledownload(switchbackto, "cache", server)
+switchbackto := simpledownload(switchbackto, "cache", server, timerestrictions[2 * extractresolution])
 If !switchbackto
 {
     FileAppend, %lastline%`r`n, blacklist
