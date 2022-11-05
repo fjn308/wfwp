@@ -647,7 +647,7 @@ sha(file, sha1 := false)
     StringLower, sha, sha
     Return, sha
 }
-simpledownload(oneline, folder, proxy := false, mute := true)
+simpledownload(oneline, folder, proxy := false, mute := true, timeout := false)
 {
     RegExMatch(oneline, "[^ ]+", filename)
     RegExMatch(oneline, "https://.*", url)
@@ -655,7 +655,7 @@ simpledownload(oneline, folder, proxy := false, mute := true)
     If FileExist(renameto)
         Return, renameto
     Else
-        udtlp(url, renameto, proxy, mute)
+        udtlp(url, renameto, proxy, mute, timeout)
     If ErrorLevel
         Return, 0
     Else
@@ -798,7 +798,7 @@ types2sizerestrictions(countarray)
     sizearray[6] := 36 * 1024 * 1024 * countarray[6]
     Return, sizearray
 }
-udtlp(uri, outfile, proxy := false, mute := false)
+udtlp(uri, outfile, proxy := false, mute := false, timeout := false)
 {
     Loop
     {
@@ -806,7 +806,11 @@ udtlp(uri, outfile, proxy := false, mute := false)
             UrlDownloadToFile, %uri%, %outfile%
         Else
         {
-            cmd := "Invoke-WebRequest -Uri '" . uri . "' -Proxy '" . proxy . "' -OutFile '" . outfile . "'"
+            If timeout
+                tail := "-TimeoutSec " . timeout
+            Else
+                tail := ""
+            cmd := "Invoke-WebRequest -Uri '" . uri . "' -Proxy '" . proxy . "' -OutFile '" . outfile . "'" . tail
             RunWait, powershell.exe %cmd%, , Hide
         }
         If ErrorLevel
