@@ -819,6 +819,7 @@ Menu, Tray, Tip, updating
 udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/sha256andtimestamp.log", "update\sha256andtimestamp.log", server)
 If ErrorLevel
 {
+    Menu, Tray, Tip, wfwp
     FileRemoveDir, update, 1
     TrayTip, , Failed to check., , 16
     Return
@@ -835,6 +836,7 @@ If !fromdatabasecheck
     timestamplocal := tagandtimestamp[2]
     If (timestamplocal >= timestampremote)
     {
+        Menu, Tray, Tip, wfwp
         FileRemoveDir, update, 1
         TrayTip, , No need to update., , 16
         Return
@@ -870,6 +872,7 @@ Menu, Tray, Tip, updating
 udtlp("https://api.github.com/repos/fjn308/wfwp/releases/latest", "update\github.json", server)
 If ErrorLevel
 {
+    Menu, Tray, Tip, wfwp
     FileRemoveDir, update, 1
     TrayTip, , Failed to check., , 16
     Return
@@ -878,6 +881,7 @@ FileRead, github, update\github.json
 github := jsonmatch(github, "tag_name", ".*?[0-9v.]+")
 If (version = github)
 {
+    Menu, Tray, Tip, wfwp
     FileRemoveDir, update, 1
     TrayTip, , No need to update., , 16
     Return
