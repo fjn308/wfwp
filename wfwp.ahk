@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Critical, On
 Menu, Tray, Tip, wfwp
-version := "v0.13"
+version := "v0.14"
 If (A_ScriptName = "wfwpnew.exe")
 {
     FileCopy, wfwpnew.exe, wfwp.exe, 1
@@ -719,9 +719,9 @@ Loop, %monitorcount%
 switchbackto := A_ScriptDir . "\" . switchbackto
 If (!readyformatch || switchwallpaper(switchbackto, monitors, readyformatch))
 {
-    TrayTip, , Failed to display. The blacklist remains untouched., , 16
     FileAppend, %lastline%`r`n, blacklist
     blacklistlength := blacklistlength + 1
+    TrayTip, , Failed to display. The blacklist remains untouched., , 16
 }
 Menu, blacklistdotmenu, Rename, 1&, Blacklist This Picture and Switch to the Next (%blacklistlength%)
 Return
@@ -795,6 +795,7 @@ FileCreateDir, %targetfolder%
 targetfile := targetfolder . "\" . originalname
 Menu, Tray, Tip, downloading
 udtlp(originalurl, targetfile, server)
+Menu, Tray, Tip, wfwp
 If ErrorLevel
     TrayTip, , Failed., , 16
 Else If (sha(targetfile, true) != originalsha1)
@@ -813,10 +814,12 @@ Return
 updatedatamenu:
 reupdatedat:
 FileCreateDir, update
+Menu, Tray, Tip, updating
 udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/sha256andtimestamp.log", "update\sha256andtimestamp.log", server)
 If ErrorLevel
 {
     FileRemoveDir, update, 1
+    TrayTip, , Failed to check., , 16
     Return
 }
 FileRead, sha256andtimestamp, update\sha256andtimestamp.log
@@ -837,9 +840,11 @@ If !fromdatabasecheck
     }
 }
 udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/resolved.dat", "update\reference.dat", server)
+Menu, Tray, Tip, wfwp
 If ErrorLevel
 {
     FileRemoveDir, update, 1
+    TrayTip, , Failed to download., , 16
     Return
 }
 If (sha("update\reference.dat") != sha256)
@@ -848,8 +853,7 @@ If (sha("update\reference.dat") != sha256)
     MsgBox, 5, Update Error, SHA-256 does not match. Retry or Cancel?
     IfMsgBox, Retry
         Goto, reupdatedat
-    MsgBox, , wfwp, wfwp will exit.
-    ExitApp
+    Return
 }
 FileMove, update\reference.dat, resolved.dat, 1
 FileRemoveDir, update, 1
@@ -861,10 +865,12 @@ Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 updatewfwpmenu:
 FileCreateDir, update
+Menu, Tray, Tip, updating
 udtlp("https://api.github.com/repos/fjn308/wfwp/releases/latest", "update\github.json", server)
 If ErrorLevel
 {
     FileRemoveDir, update, 1
+    TrayTip, , Failed to check., , 16
     Return
 }
 FileRead, github, update\github.json
@@ -876,9 +882,11 @@ If (version = github)
     Return
 }
 udtlp("https://github.com/fjn308/wfwp/releases/latest/download/wfwp.exe", "update\wfwp.exe", server)
+Menu, Tray, Tip, wfwp
 If ErrorLevel
 {
     FileRemoveDir, update, 1
+    TrayTip, , Failed to download., , 16
     Return
 }
 FileGetSize, binsize, update\wfwp.exe
