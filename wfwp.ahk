@@ -920,6 +920,7 @@ Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 specifypbutton:
 downloadfoldercachecache := downloadfoldercache
+specifyagain:
 If downloadfoldercachecache
     FileSelectFolder, downloadfoldercache, *%downloadfoldercachecache%, , wfwp: Select Folder
 Else
@@ -928,6 +929,12 @@ If ErrorLevel
 {
     downloadfoldercache := downloadfoldercachecache
     Return
+}
+If (downloadfoldercache = A_ScriptDir . "\cache")
+{
+    MsgBox, , wfwp, Not this one, please.
+    downloadfoldercache := downloadfoldercachecache
+    Goto, specifyagain
 }
 If fromoriginal
     Return
