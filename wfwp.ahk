@@ -382,7 +382,8 @@ FileDelete, download\redirect
 If downloadfoldercache
 {
     FileCreateDir, download
-    FileAppend, %downloadfolder%, download\redirect
+    If (downloadfoldercache != A_ScriptDir . "\download")
+        FileAppend, %downloadfolder%, download\redirect
 }
 databasecheck:
 If !datfilelength
