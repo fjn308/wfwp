@@ -772,7 +772,12 @@ RegExMatch(originalline, "https://.*", originalurl)
 RegExMatch(originalline, "[0-9a-f]+\.[+-]\.[^.]+", originalname)
 removethumb(originalurl)
 If fromdetails
-    fromdetails := false, originalurl := RegExReplace(originalurl, "https://upload.wikimedia.org/wikipedia/commons/[0-9a-f]+/[0-9a-f]+/", "https://commons.wikimedia.org/wiki/File:")
+{
+    fromdetails := false
+    originalurl := RegExReplace(originalurl, "https://upload.wikimedia.org/wikipedia/commons/[0-9a-f]+/[0-9a-f]+/", "https://commons.wikimedia.org/wiki/File:")
+    Run, %originalurl%
+    Return
+}
 If downloadfolder
     targetfolder := downloadfolder
 Else
