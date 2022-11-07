@@ -105,6 +105,11 @@ Loop, Read, %inputfile%
     }
     Else
     {
+        If ((!InStr(url, "/thumb/")) && (!InStr(renameto, sha(renameto, true))))
+        {
+            FileDelete, %renameto%
+            Goto, redownload
+        }
         totalnumber := totalnumber + 1
         nod := A_Now
         EnvSub, nod, startat, Seconds
