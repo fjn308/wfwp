@@ -717,9 +717,8 @@ superremove(sha1file, folder, simple := true, ByRef removednumberdelta := 0, ByR
     }
     Loop, Files, %folder%\*.*
     {
-        process := process + 1
         If showprocess
-            Menu, Tray, Tip, finishing: %process%/%totalfilenumber%
+            Menu, Tray, Tip, finishing: %A_Index%/%totalfilenumber%
         If A_LoopFileExt Not Contains jpg,jpeg,png,tif,tiff
             Continue
         If (RegExMatch(A_LoopFileName, "[0-9a-f]+\.[+-]\.", sha1dotpmdot) != 1)
