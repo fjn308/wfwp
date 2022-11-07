@@ -315,7 +315,6 @@ maxheight := StrLen(maxheight)
 FileDelete, temp-imageinfo.json
 FileDelete, temp-imageusage.json
 FileDelete, temp-titles.log
-process := 0
 If update
     linestoformat := totalnumber + totalnumberplus
 Else
@@ -329,8 +328,7 @@ If update
 FileDelete, temp-formatting.dat
 Loop, Read, temp-resolving.dat, temp-formatting.dat
 {
-    process := process + 1
-    Menu, Tray, Tip, finishing: %process%/%linestoformat%
+    Menu, Tray, Tip, finishing: %A_Index%/%linestoformat%
     formattedoutput := formatoutputdec(A_LoopReadLine, "size", maxsize)
     formattedoutput := formatoutputdec(formattedoutput, "width", maxwidth)
     formattedoutput := formatoutputdec(formattedoutput, "height", maxheight)
