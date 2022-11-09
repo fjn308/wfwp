@@ -1,6 +1,6 @@
 # 1. Introduction
 
-`wfwp` is a wallpaper displayer for Windows. Using [Wikimedia Commons](https://commons.wikimedia.org/wiki/Main_Page) as its wallpaper source, `wfwp` detects orientations and resolutions of your monitors, automatically selects suitable pictures from over 15,000 high-quality [Featured Pictures](https://commons.wikimedia.org/wiki/Commons:Featured_pictures), and change them as your wallpaper at a given frequency.
+`wfwp` is a wallpaper switcher for Windows. Using [Wikimedia Commons](https://commons.wikimedia.org/wiki/Main_Page) as its wallpaper source, `wfwp` detects orientations and resolutions of your monitors, automatically selects suitable pictures from over 15,000 high-quality [Featured Pictures](https://commons.wikimedia.org/wiki/Commons:Featured_pictures), and change them as your wallpaper at a given frequency.
 
 Other notable features include: supporting multiple monitors, blacklisting specific pictures or excluding specific categories of pictures, manually switching over pictures, downloading or checking details of original pictures, and HTTP proxy for people who have [limited access to Wikipedia](https://en.wikipedia.org/wiki/Censorship_of_Wikipedia).
 
