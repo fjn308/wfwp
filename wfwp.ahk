@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Critical, On
 Menu, Tray, Tip, wfwp
-version := "v0.14"
+version := "v0.15"
 If (A_ScriptName = "wfwpnew.exe")
 {
     FileCopy, wfwpnew.exe, wfwp.exe, 1
@@ -25,6 +25,18 @@ Else
     ExitApp
 }
 FileInstall, commons.png, commons.png, 1
+; If ((A_ScriptName = "wfwp.ahk") || (((A_MM = "10") && (A_DD = "30")) || ((A_MM = "10") && (A_DD = "31")) || ((A_MM = "11") && (A_DD = "01"))))
+;     FileInstall, cache\1f383.png, cache\1f383.png, 1
+; Else
+;     FileDelete, cache\1f383.png
+; If ((A_ScriptName = "wfwp.ahk") || (((A_MM = "12") && (A_DD = "24")) || ((A_MM = "12") && (A_DD = "25")) || ((A_MM = "12") && (A_DD = "26"))))
+;     FileInstall, cache\1f384.png, cache\1f384.png, 1
+; Else
+;     FileDelete, cache\1f384.png
+; If ((((A_MM = "10") && (A_DD = "30")) || ((A_MM = "10") && (A_DD = "31")) || ((A_MM = "11") && (A_DD = "01"))) && FileExist("cache\1f383.png"))
+;     Menu, Tray, Icon, cache\1f383.png
+; If ((((A_MM = "12") && (A_DD = "24")) || ((A_MM = "12") && (A_DD = "25")) || ((A_MM = "12") && (A_DD = "26"))) && FileExist("cache\1f384.png"))
+;     Menu, Tray, Icon, cache\1f384.png
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 monitorcount := countmonitor()
 monitors := []
