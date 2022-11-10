@@ -41,9 +41,15 @@ Here is a real example:
 
 # 4. Usage
 
+### 4.1 Ordinary
+
 Download the `wfwp.exe` from [Releases](https://github.com/fjn308/wfwp/releases) and put it into a proper folder, where `wfwp` can generate configuration or other files and cache pictures. During the first run, it will download the database (`resolved.dat`, ~5MB) automatically after initial settings are saved. You can also manually download the database [here](https://raw.githubusercontent.com/fjn308/wfwp/main/upload/resolved.dat) and put it into the same folder before running `wfwp`.
 
 If your network is limited to accessing GitHub or Wikipedia, a proxy has to be set up. You can then configure it in the `wfwp` settings menu (only HTTP proxies are supported), or in the settings of Windows. For the latter, `wfwp` follows the proxy settings of your system and performs better.
+
+### 4.2 Advanced
+
+If you have AutoHotkey (current version, not deprecated v1.0 or v2 beta) installed, you can also run the `wfwp.ahk` directly or compile a `wfwp.exe` yourself (select `commons.ico` as icon manually). The minimal source files required are `.\wfwp.ahk`, `.\commons.ico`, `.\commons.png`, and `.\scripts\functions.ahk`. The only difference between the script file and the executable binary is that the former does not have the ability to update itself.
 
 # 5. Things You May Want to Know
 
