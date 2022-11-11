@@ -200,6 +200,8 @@ fromdatabasecheck := false
 fromdetails := false
 fromoriginal := false
 indexjustclicked := 0
+Global oddclick := false
+OnMessage(0x404, "hotkeys")
 Critical, Off
 Thread, NoTimers
 Return
@@ -974,5 +976,27 @@ GoSub, settingsmenu
 fromselectfolder := false
 loadconfiguration(settingscache, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
 Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+hotkeys(wparam, lparam)
+{
+    If (lParam != 0x0202)
+        Return
+    If (GetKeyState("Ctrl") && (!GetKeyState("Alt")) && (!GetKeyState("Shift")))
+        GoSub, originalmenu
+    Else If ((!GetKeyState("Ctrl")) && GetKeyState("Alt") && (!GetKeyState("Shift")))
+        GoSub, blacklistmenu
+    Else If ((!GetKeyState("Ctrl")) && (!GetKeyState("Alt")) && GetKeyState("Shift"))
+        GoSub, switchmenu
+    Else
+    {
+        Global oddclick
+        oddclick := !oddclick
+        If oddclick
+            ToolTip, Shift + Click = Switch to the Next`nAlt   + Click = Blacklist and Switch`nCtrl  + Click = Download the Original`n(Click Again to Close This Tip :)
+        Else
+            ToolTip
+    }
+    Return
+}
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #Include, scripts\functions.ahk
