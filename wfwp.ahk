@@ -992,7 +992,7 @@ hotkeys(wparam, lparam)
         Global oddclick
         oddclick := !oddclick
         If oddclick
-            ToolTip, Shift + Click = Switch to the Next`nAlt   + Click = Blacklist and Switch`nCtrl  + Click = Download the Original`n(Click Again to Close This Tip :)
+            ToolTip, Shift + Click = Switch to the Next`nCtrl  + Click = Download the Original`nAlt   + Click = Blacklist and Switch`n(Click Again to Close This Tip :)
         Else
             ToolTip
     }
