@@ -979,7 +979,7 @@ Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hotkeys(wparam, lparam)
 {
-    If (lParam != 0x0202)
+    If (lparam != 0x0202)
         Return
     If (GetKeyState("Ctrl") && (!GetKeyState("Alt")) && (!GetKeyState("Shift")))
         GoSub, originalmenu
