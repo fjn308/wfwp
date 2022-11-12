@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Critical, On
 Menu, Tray, Tip, wfwp
-version := "v0.15"
+version := "v0.16"
 If (A_ScriptName = "wfwpnew.exe")
 {
     FileCopy, wfwpnew.exe, wfwp.exe, 1
@@ -200,10 +200,10 @@ fromdatabasecheck := false
 fromdetails := false
 fromoriginal := false
 indexjustclicked := 0
-Global oddclick := false
-OnMessage(0x404, "hotkeys")
 Critical, Off
 Thread, NoTimers
+Global oddclick := false
+OnMessage(0x404, "hotkeys")
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 snapshot:
@@ -992,7 +992,7 @@ hotkeys(wparam, lparam)
         Global oddclick
         oddclick := !oddclick
         If oddclick
-            ToolTip, Shift + Click = Switch to the Next`nCtrl  + Click = Download the Original`nAlt   + Click = Blacklist and Switch`n(Click Again to Close This Tip :)
+            ToolTip, Shift + Click: Switch to the Next`nCtrl  + Click: Download the Original`nAlt   + Click: Blacklist and Switch`n(Click Again to Hide This Tip :)
         Else
             ToolTip
     }
