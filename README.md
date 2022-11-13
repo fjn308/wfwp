@@ -26,7 +26,7 @@ Here is a real example:
 
 ![photo](/screenshots/7.png)
 
-# 3. Things You need to Know
+# 3. Things You Need to Know
 
 - `wfwp` assumes that aspect ratios of monitors are around 16:9, that is, for landscape monitors, it selects wallpapers from the pictures with ratios between 4:3 and 256:81; while for portrait monitors, the ratios would be between 256:81 and 3:4.
 
