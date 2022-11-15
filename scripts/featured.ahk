@@ -8,10 +8,10 @@ exclude := "/arthropod,/bird,/amphibian,/reptile,/oanimals,/fungi,/olifeforms"
 ; full list: "/arthropod,/bird,/ppeople,/amphibian,/fish,/reptile,/oanimals,/bone,/shell,/plant,/fungi,/olifeforms", default list: "/arthropod,/bird,/amphibian,/reptile,/oanimals,/fungi,/olifeforms", empty list: ""
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 formats := "tif,tiff,jpg,jpeg,png" ; do not edited this unless confident enough
-skipgeneratingdat := false ; true means using an existing resolved.dat
-skipgeneratingsha1 := true ; true means generating the resolved.dat only
-update := true ; false means generating the resolved.dat without referencing a refernce.dat
-upload := false ; true means generating a reference.dat as well
+skipgeneratingdat := false ; true means directly using an existing resolved.dat to generate a sha1 file
+skipgeneratingsha1 := true ; true means generating a resolved.dat only
+update := true ; false means generating a new resolved.dat without referencing an old one
+upload := false ; true means generating a folder containing a checksum file for uploading as well
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 generateat := A_NowUTC
 If proxy
@@ -356,7 +356,7 @@ If (totalsizeplus != "? b")
 excludematch := StrReplace(exclude, "/")
 excludematch := "category!=" . excludematch
 If (update && (!skipgeneratingdat))
-    FileAppend, %generateat%: %totalsize% / %totalnumber% new pics + %totalsizeplus% / %totalnumberplus% old pics from %timestamp% reference.dat -> %qualifiedsize% / %qualifiednumber% pics`, formats=%formats% -> orientation=%screenorientation%`,resolution>=%minimalresolution%`,%excludematch%`;`r`n, stats.log
+    FileAppend, %generateat%: %totalsize% / %totalnumber% new pics + %totalsizeplus% / %totalnumberplus% old pics from %timestamp% database -> %qualifiedsize% / %qualifiednumber% pics`, formats=%formats% -> orientation=%screenorientation%`,resolution>=%minimalresolution%`,%excludematch%`;`r`n, stats.log
 Else
     FileAppend, %generateat%: %totalsize% / %totalnumber% pics (excl / excl %duplicatenumber% dups) -> %qualifiedsize% / %qualifiednumber% pics (incl / excl %duplicatenumberplus% dups)`, formats=%formats% -> orientation=%screenorientation%`,resolution>=%minimalresolution%`,%excludematch%`;`r`n, stats.log
 If (upload && (!skipgeneratingdat))
