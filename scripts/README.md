@@ -10,13 +10,13 @@ screenorientation := "+" ; "+"(4:3 <= landscape <= 256:81), "-"(81:256 <= portra
 minimalresolution := 2 ; 3(uhd+), 2(qhd+), 1(fhd+), 0(any)
 resize := true ; false means writing urls of original pictures (can be extremely large) to the sha1 file
 exclude := "/arthropod,/bird,/amphibian,/reptile,/oanimals,/fungi,/olifeforms"
-; full list: "/arthropod,/bird,/ppeople,/amphibian,/fish,/reptile,/oanimals,/bone,/shell,/plant,/fungi,/olifeforms", empty list: ""
+; full list: "/arthropod,/bird,/ppeople,/amphibian,/fish,/reptile,/oanimals,/bone,/shell,/plant,/fungi,/olifeforms", default list: "/arthropod,/bird,/amphibian,/reptile,/oanimals,/fungi,/olifeforms", empty list: ""
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 formats := "tif,tiff,jpg,jpeg,png" ; do not edited this unless confident enough
-skipgeneratingdat := false ; true means using an existing resolved.dat
-skipgeneratingsha1 := true ; true means generating the resolved.dat only
-update := true ; false means generating the resolved.dat without referencing a refernce.dat
-upload := false ; true means generating a reference.dat as well
+skipgeneratingdat := false ; true means directly using an existing resolved.dat to generate a sha1 file
+skipgeneratingsha1 := true ; true means generating a resolved.dat only
+update := true ; false means generating a new resolved.dat without referencing an old one
+upload := false ; true means generating a folder containing a checksum file for uploading as well
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ```
 
