@@ -237,7 +237,7 @@ If (primarywidth > primaryheight)
 Else
     xory := "y", worh := "h-1 w"
 resizewindow:
-Gui, New, , wfwp: Which One? (Click it!)
+Gui, New, , wfwp: Which One? (Click It!)
 totallengthalonglongside := 0
 plusm := "m"
 Loop, %monitorcount%
@@ -268,7 +268,7 @@ If (totallengthalonglongside > maxlongside)
     Goto, resizewindow
 }
 Gui, Show, Center
-WinWaitClose, wfwp: Which One? (Click it!)
+WinWaitClose, wfwp: Which One? (Click It!)
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 tellwhichone:
@@ -992,7 +992,7 @@ hotkeys(wparam, lparam)
         Global oddclick
         oddclick := !oddclick
         If oddclick
-            ToolTip, Shift + Click: Switch to the Next`nCtrl  + Click: Download the Original`nAlt   + Click: Blacklist and Switch`n(Click Again to Hide This Tip :)
+            ToolTip, Short Cuts:`nShift + Click: Switch to the Next`nCtrl  + Click: Download the Original`nAlt   + Click: Blacklist and Switch`n(Click Again to Hide This Tip :)
         Else
             ToolTip
     }
