@@ -780,16 +780,14 @@ If ((!originalsha1) || (RegExMatch(originalsha1, "tmp-[0-9]+\.jpg") = 1))
     Return
 RegExMatch(originalsha1, "[0-9a-f]+", originalsha1)
 originalline := 0
-Loop, Read, urls.sha1
+Loop, Read, resolved.dat
 {
     If InStr(A_LoopReadLine, originalsha1)
         originalline := A_LoopReadLine
 }
 If !originalline
     Return
-RegExMatch(originalline, "https://.*", originalurl)
-RegExMatch(originalline, "[0-9a-f]+\.[+-]\.[^.]+", originalname)
-removethumb(originalurl)
+RegExMatch(originalline, "https://[^""]+", originalurl)
 If fromdetails
 {
     fromdetails := false
@@ -797,6 +795,18 @@ If fromdetails
     Run, %originalurl%
     Return
 }
+originalname := originalsha1 . "." . RegExReplace(originalurl, ".*\.")
+RegExMatch(originalline, "size = +[0-9]+", originalsize)
+originalsize := RegExReplace(originalsize, "size = +")
+originalsizeinmb := originalsize / 1024 / 1024
+If (originalsizeinmb > 64)
+{
+    MsgBox, 1, This original file sizes %originalsizeinmb% MB. Are you sure to download it?
+    IfMsgBox, Ok
+        Goto, confirmed
+    Return
+}
+confirmed:
 If downloadfolder
     targetfolder := downloadfolder
 Else
