@@ -801,7 +801,7 @@ originalsize := RegExReplace(originalsize, "size = +")
 originalsizeinmb := originalsize / 1024 / 1024
 If (originalsizeinmb > 64)
 {
-    MsgBox, 1, This original file sizes %originalsizeinmb% MB. Are you sure to download it?
+    MsgBox, 1, This original file sizes %originalsizeinmb% MB. Are you sure you want to download it?
     IfMsgBox, Ok
         Goto, confirmed
     Return
