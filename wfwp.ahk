@@ -891,44 +891,58 @@ TrayTip, , Succeed., , 16
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 updatewfwpmenu:
+reupdatewfwp:
 FileCreateDir, update
 Menu, Tray, Tip, updating
 udtlp("https://api.github.com/repos/fjn308/wfwp/releases/latest", "update\github.json", server, true, 16)
 If ErrorLevel
 {
-    Menu, Tray, Tip, wfwp
-    FileRemoveDir, update, 1
     TrayTip, , Failed to check., , 16
-    Return
+    Goto, quit
 }
 FileRead, github, update\github.json
 github := jsonmatch(github, "tag_name", ".*?[0-9v.]+")
 If (version = github)
 {
-    Menu, Tray, Tip, wfwp
-    FileRemoveDir, update, 1
     TrayTip, , No need to update., , 16
-    Return
+    Goto, quit
 }
 udtlp("https://github.com/fjn308/wfwp/releases/latest/download/wfwp.exe", "update\wfwp.exe", server, true, 32)
-Menu, Tray, Tip, wfwp
 If ErrorLevel
 {
-    FileRemoveDir, update, 1
     TrayTip, , Failed to download., , 16
-    Return
+    Goto, quit
 }
 FileGetSize, binsize, update\wfwp.exe
 If (binsize < 4096)
 {
-    FileRemoveDir, update, 1
     TrayTip, , wfwp is missing. Update is aborted., , 16
-    Return
+    Goto, quit
+}
+udtlp("https://github.com/fjn308/wfwp/releases/latest/download/sha256", "update\sha256", server, true, 16)
+If ErrorLevel
+{
+    TrayTip, , Failed to fetch checksum., , 16
+    Goto, quit
+}
+FileRead, sha256, update\sha256
+If (sha("update\wfwp.exe") != sha256)
+{
+    MsgBox, 5, Update Error, SHA-256 does not match. Retry or Cancel?
+    IfMsgBox, Retry
+    {
+        FileRemoveDir, update, 1
+        Goto, reupdatewfwp
+    }
+    Goto, quit
 }
 FileMove, update\wfwp.exe, wfwpnew.exe, 1
 FileRemoveDir, update, 1
 Run, wfwpnew.exe
 ExitApp
+quit:
+Menu, Tray, Tip, wfwp
+FileRemoveDir, update, 1
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 exitmenu:
@@ -977,6 +991,7 @@ GoSub, settingsmenu
 fromselectfolder := false
 loadconfiguration(settingscache, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
 Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 refreshtip:
 lifetimecache := lifetimecache - 1
 If lifetimecache
