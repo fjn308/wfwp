@@ -1,4 +1,4 @@
-﻿FileDelete, sha256
+FileDelete, sha256
 sha256 := sha("wfwp.exe")
 If !sha256
 {
