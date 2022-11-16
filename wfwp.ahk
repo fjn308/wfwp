@@ -202,6 +202,7 @@ fromoriginal := false
 indexjustclicked := 0
 Critical, Off
 Thread, NoTimers
+Global lifetime := 10
 Global oddclick := false
 OnMessage(0x404, "hotkeys")
 Return
@@ -818,7 +819,7 @@ Else
 FileCreateDir, %targetfolder%
 targetfile := targetfolder . "\" . originalname
 Menu, Tray, Tip, downloading
-udtlp(originalurl, targetfile, server)
+udtlp(originalurl, targetfile, server, true)
 Menu, Tray, Tip, wfwp
 If ErrorLevel
     TrayTip, , Failed., , 16
@@ -839,7 +840,7 @@ updatedatamenu:
 reupdatedat:
 FileCreateDir, update
 Menu, Tray, Tip, updating
-udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/sha256andtimestamp.log", "update\sha256andtimestamp.log", server)
+udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/sha256andtimestamp.log", "update\sha256andtimestamp.log", server, true, 16)
 If ErrorLevel
 {
     Menu, Tray, Tip, wfwp
@@ -865,7 +866,7 @@ If !fromdatabasecheck
         Return
     }
 }
-udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/resolved.dat", "update\reference.dat", server)
+udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/resolved.dat", "update\reference.dat", server, true, 64)
 Menu, Tray, Tip, wfwp
 If ErrorLevel
 {
@@ -892,7 +893,7 @@ Return
 updatewfwpmenu:
 FileCreateDir, update
 Menu, Tray, Tip, updating
-udtlp("https://api.github.com/repos/fjn308/wfwp/releases/latest", "update\github.json", server)
+udtlp("https://api.github.com/repos/fjn308/wfwp/releases/latest", "update\github.json", server, true, 16)
 If ErrorLevel
 {
     Menu, Tray, Tip, wfwp
@@ -909,7 +910,7 @@ If (version = github)
     TrayTip, , No need to update., , 16
     Return
 }
-udtlp("https://github.com/fjn308/wfwp/releases/latest/download/wfwp.exe", "update\wfwp.exe", server)
+udtlp("https://github.com/fjn308/wfwp/releases/latest/download/wfwp.exe", "update\wfwp.exe", server, true, 32)
 Menu, Tray, Tip, wfwp
 If ErrorLevel
 {
@@ -976,6 +977,21 @@ GoSub, settingsmenu
 fromselectfolder := false
 loadconfiguration(settingscache, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
 Return
+refreshtip:
+lifetimecache := lifetimecache - 1
+If lifetimecache
+{
+    ToolTip, Short Cuts:`nShift + Click: Switch to the Next`nCtrl  + Click: Download the Original`nAlt   + Click: Blacklist and Switch`nClick Again to Hide This Tip: %lifetimecache%s, %xcoordinate%, %ycoordinate%
+    SetTimer, refreshtip, 1000
+}
+Else
+{
+    lifetimecache := lifetime
+    oddclick := !oddclick
+    ToolTip
+    SetTimer, refreshtip, Delete
+}
+Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hotkeys(wparam, lparam)
 {
@@ -989,12 +1005,23 @@ hotkeys(wparam, lparam)
         GoSub, switchmenu
     Else
     {
+        Global lifetime
+        Global lifetimecache := lifetime
         Global oddclick
         oddclick := !oddclick
         If oddclick
-            ToolTip, Short Cuts:`nShift + Click: Switch to the Next`nCtrl  + Click: Download the Original`nAlt   + Click: Blacklist and Switch`n(Click Again to Hide This Tip :)
+        {
+            Global xcoordinate
+            Global ycoordinate
+            MouseGetPos, xcoordinate, ycoordinate
+            ToolTip, Short Cuts:`nShift + Click: Switch to the Next`nCtrl  + Click: Download the Original`nAlt   + Click: Blacklist and Switch`nClick Again to Hide This Tip: %lifetime%s, %xcoordinate%, %ycoordinate%
+            SetTimer, refreshtip, 1000
+        }
         Else
+        {
             ToolTip
+            SetTimer, refreshtip, Delete
+        }
     }
     Return
 }
