@@ -596,6 +596,14 @@ oct2hexhex(oct)
         Return, "hh"
     Return, byte2hex(SubStr(oct, 1, 4)) . byte2hex(SubStr(oct, 5))
 }
+preparetimer(time)
+{
+    EnvSub, time, A_NowUTC, Seconds
+    If (time <= 0)
+        Return, 0
+    Else
+        Return, 1000 * time
+}
 remeovefile(filepath, ByRef numberdelta, ByRef sizedelta)
 {
     FileGetSize, size, %filepath%
@@ -613,17 +621,6 @@ removethumb(ByRef somelink)
     }
     RegExMatch(somelink, "https.*\.", somelinkwithoutextension)
     Return, StrReplace(somelink, somelinkwithoutextension)
-}
-resumetimer(timer, ringtime)
-{
-    EnvSub, ringtime, A_NowUTC, Seconds
-    If (ringtime <= 0)
-        GoSub, %timer%
-    Else
-    {
-        ringtime := 1000 * ringtime
-        SetTimer, %timer%, %ringtime%
-    }
 }
 sha(file, sha1 := false)
 {
@@ -701,9 +698,9 @@ superdat2sha1(datfile, sha1file, monitortypes, binaryexclude)
     FileDelete, temp-sha1s.log
     Return, qualifieddatanumber
 }
-superremove(sha1file, folder, simple := true, ByRef removednumberdelta := 0, ByRef removedsizedelta := 0, showprocess := false)
+superremove(sha1file, folder, simple := true, ByRef removednumberdelta := 0, ByRef removedsizedelta := 0, showprogress := false)
 {
-    If showprocess
+    If showprogress
     {
         totalfilenumber := 0
         Loop, Files, download\*.*
@@ -717,7 +714,7 @@ superremove(sha1file, folder, simple := true, ByRef removednumberdelta := 0, ByR
     }
     Loop, Files, %folder%\*.*
     {
-        If showprocess
+        If showprogress
             Menu, Tray, Tip, finishing: %A_Index%/%totalfilenumber%
         If A_LoopFileExt Not Contains jpg,jpeg,png,tif,tiff
             Continue
@@ -806,7 +803,7 @@ udtlp(uri, outfile, proxy := false, mute := false, timeout := false)
         Else
         {
             If timeout
-                tail := "-TimeoutSec " . timeout
+                tail := " -TimeoutSec " . timeout
             Else
                 tail := ""
             cmd := "Invoke-WebRequest -Uri '" . uri . "' -Proxy '" . proxy . "' -OutFile '" . outfile . "'" . tail
