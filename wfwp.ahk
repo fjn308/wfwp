@@ -156,20 +156,20 @@ blacklistlength := countandsortblacklist("blacklist")
 Menu, Tray, NoStandard
 If (monitorcount > 1)
 {
-    Menu, Tray, Add, Switch One to the Next, switchonemenu, P3
     Menu, Tray, Add, Switch All to the Nexts, switchmenu, P2
+    Menu, Tray, Add, Switch One to the Next, switchonemenu, P3
 }
 Else
     Menu, Tray, Add, Switch to the Next, switchmenu, P3
-Menu, Tray, Add, Check Picture Details, detailsmenu, P7
 Menu, Tray, Add, Download the Original, originalmenu, P1
+Menu, Tray, Add, Check Picture Details, detailsmenu, P7
 Menu, blacklistdotmenu, Add, Blacklist This Picture and Switch to the Next (%blacklistlength%), blacklistmenu, P4
 Menu, blacklistdotmenu, Add, Un-Blacklist the Last Picture and Switch Back, unblacklistmenu, P6
 Menu, blacklistdotmenu, Add, Clear the Blacklist (Caution!), clearblacklistmenu, P8
 Menu, Tray, Add, Blacklist ..., :blacklistdotmenu
 Menu, Tray, Add
-Menu, Tray, Add, Settings, settingsmenu, P13
 Menu, Tray, Add, Re-Detect Monitors (%monitorcount%), detectmenu, P15
+Menu, Tray, Add, Settings, settingsmenu, P13
 Menu, updatedotmenu, Add, Update the Database (%qualifieddatanumber%/%datfilelength%), updatedatamenu, P11
 Menu, updatedotmenu, Add, Update wfwp (%version%), updatewfwpmenu, P12
 Menu, Tray, Add, Update ..., :updatedotmenu
@@ -1041,7 +1041,7 @@ refreshtip:
 lifetimecache := lifetimecache - 1
 If !lifetimecache
 {
-    lifetimecache := lifetime
+    lifetimecache := lifetime + 1
     oddclick := !oddclick
     ToolTip
     SetTimer, refreshtip, Delete
@@ -1072,6 +1072,7 @@ hotkeys(wparam, lparam)
         GoSub, blacklistmenu
     Else If ((!GetKeyState("Ctrl")) && (!GetKeyState("Alt")) && GetKeyState("Shift"))
     {
+        Global monitorcount
         If (monitorcount > 1)
             GoSub, switchonemenu
         Else
@@ -1080,7 +1081,7 @@ hotkeys(wparam, lparam)
     Else
     {
         Global lifetime
-        Global lifetimecache := lifetime
+        Global lifetimecache := lifetime + 1
         Global oddclick
         oddclick := !oddclick
         If oddclick
