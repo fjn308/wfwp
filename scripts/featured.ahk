@@ -81,13 +81,13 @@ Else
     year := 2004
     aorb := ""
 }
-process := 0
+progress := 0
 Loop
 {
     If !update
     {
-        process := process + 1
-        Menu, Tray, Tip, preparing: %process%/%halfyearnumber%
+        progress := progress + 1
+        Menu, Tray, Tip, preparing: %progress%/%halfyearnumber%
     }
     pagenumber := 1
     imagesapi := "https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=images&imlimit=500&titles=Commons%3AFeatured_pictures/chronological/" . year . aorb
@@ -145,7 +145,7 @@ Loop, Files, temp-titles\*.json
         If !titleposition
             Continue
         RegExMatch(titlematched, """File:.*?\..*?[^\\]""", titlematched)
-        RegExMatch(titlematched, "\.[^.]*[^\\]""", titleextension)
+        RegExMatch(titlematched, "\.[^.]+[^\\]""", titleextension)
         If titleextension Contains %formats%
         {
             totalnumber := totalnumber + 1
