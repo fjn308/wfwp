@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Critical, On
-Menu, Tray, Tip, wfwp
-version := "v0.16"
+Menu, Tray, Tip, initializing...
+version := "v0.17"
 If (A_ScriptName = "wfwpnew.exe")
 {
     FileCopy, wfwpnew.exe, wfwp.exe, 1
@@ -41,6 +41,8 @@ FileInstall, commons.png, commons.png, 1
 ; }
 ; Else If (A_ScriptName = "wfwp.exe")
 ;     FileDelete, cache\1f384.png
+CoordMode, Mouse, Screen
+CoordMode, ToolTip, Screen
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 monitorcount := countmonitor()
 monitors := []
@@ -114,6 +116,20 @@ plant := extractbit(binaryexclude, 9)
 fungi := extractbit(binaryexclude, 10)
 olifeforms := extractbit(binaryexclude, 11)
 GoSub, snapshot
+If FileExist("download\redirect")
+{
+    FileRead, downloadfolder, download\redirect
+    FileCreateDir, %downloadfolder%
+    If ErrorLevel
+    {
+        downloadfolder := A_ScriptDir . "\download"
+        FileDelete, download\redirect
+    }
+}
+Else If FileExist("download")
+    downloadfolder := A_ScriptDir . "\download"
+Else
+    downloadfolder := 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 FileDelete, urls.sha1
 moveonlist := 0
@@ -140,27 +156,27 @@ blacklistlength := countandsortblacklist("blacklist")
 Menu, Tray, NoStandard
 If (monitorcount > 1)
 {
-    Menu, Tray, Add, Switch All to the Nexts, switchmenu
-    Menu, Tray, Add, Switch One to the Next, switchonemenu
+    Menu, Tray, Add, Switch One to the Next, switchonemenu, P3
+    Menu, Tray, Add, Switch All to the Nexts, switchmenu, P2
 }
 Else
-    Menu, Tray, Add, Switch to the Next, switchmenu
-Menu, Tray, Add, Check Picture Details, detailsmenu
-Menu, Tray, Add, Download the Original, originalmenu
-Menu, blacklistdotmenu, Add, Blacklist This Picture and Switch to the Next (%blacklistlength%), blacklistmenu
-Menu, blacklistdotmenu, Add, Un-Blacklist the Last Picture and Switch Back, unblacklistmenu
-Menu, blacklistdotmenu, Add, Clear the Blacklist (Caution!), clearblacklistmenu
+    Menu, Tray, Add, Switch to the Next, switchmenu, P3
+Menu, Tray, Add, Check Picture Details, detailsmenu, P7
+Menu, Tray, Add, Download the Original, originalmenu, P1
+Menu, blacklistdotmenu, Add, Blacklist This Picture and Switch to the Next (%blacklistlength%), blacklistmenu, P4
+Menu, blacklistdotmenu, Add, Un-Blacklist the Last Picture and Switch Back, unblacklistmenu, P6
+Menu, blacklistdotmenu, Add, Clear the Blacklist (Caution!), clearblacklistmenu, P8
 Menu, Tray, Add, Blacklist ..., :blacklistdotmenu
 Menu, Tray, Add
-Menu, Tray, Add, Re-Detect Monitors (%monitorcount%), detectmenu
-Menu, updatedotmenu, Add, Update the Database (%qualifieddatanumber%/%datfilelength%), updatedatamenu
-Menu, updatedotmenu, Add, Update wfwp (%version%), updatewfwpmenu
+Menu, Tray, Add, Settings, settingsmenu, P13
+Menu, Tray, Add, Re-Detect Monitors (%monitorcount%), detectmenu, P15
+Menu, updatedotmenu, Add, Update the Database (%qualifieddatanumber%/%datfilelength%), updatedatamenu, P11
+Menu, updatedotmenu, Add, Update wfwp (%version%), updatewfwpmenu, P12
 Menu, Tray, Add, Update ..., :updatedotmenu
 If (A_ScriptName = "wfwp.ahk")
     Menu, updatedotmenu, Disable, 2&
-Menu, Tray, Add, Settings, settingsmenu
 Menu, Tray, Add
-Menu, Tray, Add, Exit, exitmenu
+Menu, Tray, Add, Exit, exitmenu, P16
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 monitortypecounts := types2countarray(monitortypes)
 numberrestrictions := types2numberrestrictions(monitortypecounts)
@@ -169,21 +185,16 @@ timerestrictions := [21, 21, 25, 25, 38, 38]
 totalnumberrestriction := 0
 Loop, 6
     totalnumberrestriction := totalnumberrestriction + numberrestrictions[A_Index]
+downloading := false
+fromdatabasecheck := false
+fromdetails := false
+fromoriginal := false
+fromselectfolder := false
+indexjustclicked := 0
 switching := false
-If FileExist("download\redirect")
-{
-    FileRead, downloadfolder, download\redirect
-    FileCreateDir, %downloadfolder%
-    If ErrorLevel
-    {
-        downloadfolder := A_ScriptDir . "\download"
-        FileDelete, download\redirect
-    }
-}
-Else If FileExist("download")
-    downloadfolder := A_ScriptDir . "\download"
-Else
-    downloadfolder := 0
+Global lifetime := 10
+Global oddclick := false
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 If ((!firstrun) && qualifieddatanumber)
 {
     If !nextswitch
@@ -191,19 +202,18 @@ If ((!firstrun) && qualifieddatanumber)
     If ((!nextswitch) || moveonlist)
         GoSub, switchmenu
     Else
-        resumetimer("switchmenu", nextswitch)
+    {
+        nextswitchtogo := preparetimer(nextswitch)
+        If nextswitchtogo
+            SetTimer, switchmenu, %nextswitchtogo%, -1
+        Else
+            GoSub, switchmenu
+    }
 }
 Else
     GoSub, settingsmenu
-fromselectfolder := false
-fromdatabasecheck := false
-fromdetails := false
-fromoriginal := false
-indexjustclicked := 0
+Menu, Tray, Tip, wfwp
 Critical, Off
-Thread, NoTimers
-Global lifetime := 10
-Global oddclick := false
 OnMessage(0x404, "hotkeys")
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -238,7 +248,7 @@ If (primarywidth > primaryheight)
 Else
     xory := "y", worh := "h-1 w"
 resizewindow:
-Gui, New, , wfwp: Which One? (Click It!)
+Gui, whichone:New, , wfwp: Which One? (Click It!)
 totallengthalonglongside := 0
 plusm := "m"
 Loop, %monitorcount%
@@ -265,206 +275,20 @@ Loop, %monitorcount%
 If (totallengthalonglongside > maxlongside)
 {
     maxshortsdie := maxlongside / totallengthalonglongside * maxshortsdie
+    Gui, whichone:Default
     Gui, Destroy
     Goto, resizewindow
 }
 Gui, Show, Center
+Thread, Priority, 0
 WinWaitClose, wfwp: Which One? (Click It!)
 Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 tellwhichone:
 indexjustclicked := StrReplace(A_GuiControl, "pdot")
+Gui, whichone:Default
 Gui, Destroy
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-settingsmenu:
-If !fromselectfolder
-    downloadfoldercache := downloadfolder
-If downloadfoldercache
-{
-    downloadfolderforshow := downloadfoldercache
-    pathlength := StrLen(downloadfolderforshow)
-    If (pathlength > 32)
-    {
-        downloadfolderforshow := SubStr(downloadfolderforshow, -28)
-        firstslash := InStr(downloadfolderforshow, "\")
-        If firstslash
-            downloadfolderforshow := SubStr(downloadfolderforshow, firstslash)
-        downloadfolderforshow := "..." . downloadfolderforshow
-    }
-}
-Else
-    downloadfolderforshow := "Not Specified"
-blanklength := 32 - StrLen(downloadfolderforshow)
-Loop, %blanklength%
-    downloadfolderforshow := downloadfolderforshow . " "
-proxychecked :=checked(proxy)
-minutechecked := checked(minute)
-nminutechecked := checked(nminute)
-arthropod := extractbit(binaryexclude, 0)
-bird := extractbit(binaryexclude, 1)
-ppeople := extractbit(binaryexclude, 2)
-amphibian := extractbit(binaryexclude, 3)
-fish := extractbit(binaryexclude, 4)
-reptile := extractbit(binaryexclude, 5)
-oanimals := extractbit(binaryexclude, 6)
-bone := extractbit(binaryexclude, 7)
-shell := extractbit(binaryexclude, 8)
-plant := extractbit(binaryexclude, 9)
-fungi := extractbit(binaryexclude, 10)
-olifeforms := extractbit(binaryexclude, 11)
-arthropodchecked := checked(arthropod)
-birdchecked := checked(bird)
-ppeoplechecked := checked(ppeople)
-amphibianchecked := checked(amphibian)
-fishchecked := checked(fish)
-reptilechecked := checked(reptile)
-oanimalschecked := checked(oanimals)
-bonechecked := checked(bone)
-shellchecked := checked(shell)
-plantchecked := checked(plant)
-fungichecked := checked(fungi)
-olifeformschecked := checked(olifeforms)
-Gui, New, , wfwp: Settings
-Gui, Add, Tab3, , General|Exclude
-Gui, Tab, 1
-Gui, Add, Text, xm ym
-Gui, Add, Text, xm y+m
-Gui, Add, Text, x+m y+m, Connect via a Proxy:
-Gui, Add, CheckBox, x+m %proxychecked% vproxy, http://
-Gui, Add, Edit, x+0 Limit3 Number vip1, %ip1%
-Gui, Add, Text, x+0, .
-Gui, Add, Edit, x+0 Limit3 Number vip2, %ip2%
-Gui, Add, Text, x+0, .
-Gui, Add, Edit, x+0 Limit3 Number vip3, %ip3%
-Gui, Add, Text, x+0, .
-Gui, Add, Edit, x+0 Limit3 Number vip4, %ip4%
-Gui, Add, Text, x+0, :
-Gui, Add, Edit, x+0 Limit5 Number vport, %port%
-Gui, Add, Text, xm y+m
-Gui, Add, Text, x+m y+m, Switching Frequency:
-Gui, Add, Text, x+m, Every ` `
-Gui, Add, Edit, x+m wp vfrequency
-Gui, Add, UpDown, Range1-60, %frequency%
-Gui, Add, Text, x+m, ` `
-Gui, Add, Radio, x+m %minutechecked% vminute, Minuetes
-Gui, Add, Radio, x+m %nminutechecked% vnminute, Hours ` ` `
-Gui, Add, Text, xm y+m
-Gui, Add, Text, x+m y+m, Save Originals into:
-Gui, Add, Text, x+m cblue gspecifypbutton, %downloadfolderforshow%
-Gui, Add, Text, xm y+m
-Gui, Add, Text, x+m y+m Section, If you want to add wfwp to run automatically at startup, you may follow
-Gui, Add, Text, x+0 cblue gmsbutton, ` this
-Gui, Add, Text, xs y+m cblue gmsbutton, guidance `
-Gui, Add, Text, x+0, provided by Microsoft.
-Gui, Tab, 2
-Gui, Add, Text, xm ym
-Gui, Add, Text, xm y+m
-Gui, Add, Text, x+m y+m Section, Some specific categories of pictures may not be proper as wallpapers, which can be
-Gui, Add, Text, xs y+m, excluded here (check the list at the bottom of
-Gui, Add, Text, x+0 cblue gwikibutton, ` this page
-Gui, Add, Text, x+0, ` for more infomation):`n
-Gui, Add, CheckBox, xs y+m %arthropodchecked% varthropod, Arthropods ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %birdchecked% vbird, Birds ` ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m Disabled, Mammals
-Gui, Add, CheckBox, xs y+m %amphibianchecked% vamphibian, Amphibians ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %fishchecked% vfish, Fish ` ` ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %reptilechecked% vreptile, Reptiles
-Gui, Add, CheckBox, xs y+m %oanimalschecked% voanimals, Other Animals ` ` ` `
-Gui, Add, CheckBox, x+m %bonechecked% vbone, Bones and Fossils
-Gui, Add, CheckBox, x+m %shellchecked% vshell, Shells
-Gui, Add, CheckBox, xs y+m %plantchecked% vplant, Plants ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %fungichecked% vfungi, Fungi ` ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %olifeformschecked% volifeforms, Other Lifeforms
-Gui, Add, Text, xm y+m
-Gui, Add, CheckBox, x+m y+m %ppeoplechecked% vppeople, Reduce Portraits of People on Portrait (Non-Landscape) Monitors
-Gui, Tab
-Gui, Add, Button, xm y+m ghelpbutton, ` ` ` ` ` Help / About ` ` ` `
-Gui, Add, Button, x+m grestorebutton, ` ` Restore to Default `
-Gui, Add, Text, x+0, ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, Button, x+0 gsubmitbutton, ` ` ` Save and Exit ` ` ` `
-Gui, Show, Center
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-submitbutton:
-binaryexcludecache := binaryexclude
-speriodcache := speriod
-Gui, Submit
-GoSub, snapshot
-FileDelete, config
-If nextswitch
-    FileAppend, %settings%@%nextswitch%, config
-Else
-    FileAppend, %settings%, config
-downloadfolder := downloadfoldercache
-FileDelete, download\redirect
-If downloadfoldercache
-{
-    FileCreateDir, download
-    If (downloadfoldercache != A_ScriptDir . "\download")
-        FileAppend, %downloadfolder%, download\redirect
-}
-databasecheck:
-If !datfilelength
-{
-    fromdatabasecheck := true
-    If !firstrun
-    {
-        MsgBox, 3, Download or Not, The database is missing. May wfwp download it?
-        IfMsgBox Yes
-        {}
-        Else
-        {
-            MsgBox, , wfwp, wfwp will exit.
-            ExitApp
-        }
-    }
-    Else
-        TrayTip, , It is the first run. wfwp is downloading the database., , 16
-    GoSub, updatedatamenu
-    fromdatabasecheck := false
-    Goto, databasecheck
-}
-firstrun := false
-If ((!qualifieddatanumber) || (binaryexclude != binaryexcludecache))
-{
-    qualifieddatanumber := superdat2sha1("resolved.dat", "urls.sha1", monitortypes, binaryexclude)
-    If !qualifieddatanumber
-    {
-        FileDelete, urls.sha1
-        FileDelete, resolved.dat
-        datfilelength := 0
-        Goto, databasecheck
-    }
-    Menu, updatedotmenu, Rename, 1&, Update the Database (%qualifieddatanumber%/%datfilelength%)
-    refrencenewlists := true
-    moveonlist := premoveon("urls.sha1", "cache", monitors)
-    superremove("urls.sha1", "cache")
-}
-If !nextswitch
-    moveonlist := 0
-If ((!nextswitch) || moveonlist)
-    GoSub, switchmenu
-Else
-{
-    sperioddelta := speriod - speriodcache
-    EnvAdd, nextswitch, sperioddelta, Seconds
-    resumetimer("switchmenu", nextswitch)
-}
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-restorebutton:
-GoSub, snapshot
-settingscache := StrReplace(settings, "0x")
-Gui, Destroy
-loaddefault(proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
-downloadfoldercache := 0
-fromselectfolder := true
-GoSub, settingsmenu
-fromselectfolder := false
-loadconfiguration(settingscache, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 switchonemenu:
 GoSub, whichonequestion
 If !indexjustclicked
@@ -500,11 +324,11 @@ If switching
 Else
 {
     switching := true
-    Menu, Tray, Tip, switching
+    Menu, Tray, Tip, switching...
 }
 If !moveonlist
 {
-    SetTimer, switchmenu, %period%
+    SetTimer, switchmenu, %period%, -1
     nextswitch := A_NowUTC
     EnvAdd, nextswitch, speriod, Seconds
     FileDelete, config
@@ -558,6 +382,11 @@ Loop, %totalnumberrestriction%
             Continue
         }
     }
+    Else
+    {
+        Thread, Priority, -1
+        Menu, Tray, Tip, caching...
+    }
     sparesapces[whichmonitortypeindex] := sizerestrictionscache[whichmonitortypeindex] - folderpicturesize("cache", match1, match2)
     If (Max(sparesapces*) <= 0)
         Break
@@ -604,7 +433,106 @@ moveonlistreal := -1
 switching := false
 Menu, Tray, Tip, wfwp
 Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+detailsmenu:
+fromdetails := true
+If (monitorcount > 1)
+{
+    GoSub, whichonequestion
+    If !indexjustclicked
+        Return
+}
+GoSub, originalmenu
+Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+originalmenu:
+If downloading
+{
+    TrayTip, , Please wait until the last download process completes., , 16
+    Return
+}
+If (monitorcount > 1)
+{
+    If !indexjustclicked
+    {
+        GoSub, whichonequestion
+        If !indexjustclicked
+            Return
+    }
+    originalsha1 := trackwallpaper(monitors, indexjustclicked, "cache")
+    indexjustclicked := 0
+}
+Else
+    originalsha1 := trackwallpaper(monitors, 1, "cache")
+If ((!originalsha1) || (RegExMatch(originalsha1, "tmp-[0-9]+\.jpg") = 1))
+    Return
+RegExMatch(originalsha1, "[0-9a-f]+", originalsha1)
+originalline := 0
+Loop, Read, resolved.dat
+{
+    If InStr(A_LoopReadLine, originalsha1)
+        originalline := A_LoopReadLine
+}
+If !originalline
+    Return
+RegExMatch(originalline, "https://[^""]+", originalurl)
+If fromdetails
+{
+    fromdetails := false
+    originalurl := RegExReplace(originalurl, "https://upload.wikimedia.org/wikipedia/commons/[0-9a-f]+/[0-9a-f]+/", "https://commons.wikimedia.org/wiki/File:")
+    Run, %originalurl%
+    Return
+}
+originalname := originalsha1 . "." . RegExReplace(originalurl, ".*\.")
+RegExMatch(originalline, "size = +[0-9]+", originalsize)
+originalsize := RegExReplace(originalsize, "size = +")
+originalsizeinmb := originalsize / 1024 / 1024
+If (originalsizeinmb > 64)
+{
+    MsgBox, 1, This original file sizes %originalsizeinmb% MB. Are you sure you want to download it?
+    IfMsgBox, Ok
+        Goto, confirmed
+    Return
+}
+confirmed:
+If downloadfolder
+    targetfolder := downloadfolder
+Else
+{
+    downloadfoldercache := 0
+    fromoriginal := true
+    GoSub, specifypbutton
+    fromoriginal := false
+    If downloadfoldercache
+    {
+        downloadfolder := downloadfoldercache
+        targetfolder := downloadfolder
+        FileDelete, download\redirect
+        FileCreateDir, download
+        FileAppend, %downloadfolder%, download\redirect
+    }
+    Else
+        targetfolder := A_ScriptDir . "\download"
+}
+FileCreateDir, %targetfolder%
+targetfile := targetfolder . "\" . originalname
+downloading := true
+Menu, Tray, Tip, downloading...
+Thread, Priority, -2
+udtlp(originalurl, targetfile, server, true)
+Menu, Tray, Tip, wfwp
+downloading := false
+If ErrorLevel
+    TrayTip, , Failed., , 16
+Else If (sha(targetfile, true) != originalsha1)
+{
+    FileDelete, %targetfile%
+    TrayTip, , Failed., , 16
+}
+Else
+    TrayTip, , Succeed., , 16
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 blacklistmenu:
 If (monitorcount > 1)
 {
@@ -716,7 +644,9 @@ If !switchbackto
     Menu, blacklistdotmenu, Rename, 1&, Blacklist This Picture and Switch to the Next (%blacklistlength%)
     Return
 }
+Menu, Tray, Tip, reloading...
 switchbackto := simpledownload(switchbackto, "cache", server, timerestrictions[2 * extractresolution])
+Menu, Tray, Tip, wfwp
 If !switchbackto
 {
     FileAppend, %lastline%`r`n, blacklist
@@ -750,106 +680,11 @@ clearblacklistmenu:
 FileDelete, blacklist
 Menu, blacklistdotmenu, Rename, 1&, Blacklist This Picture and Switch to the Next (0)
 Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-detailsmenu:
-fromdetails := true
-If (monitorcount > 1)
-{
-    GoSub, whichonequestion
-    If !indexjustclicked
-        Return
-}
-GoSub, originalmenu
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-originalmenu:
-If (monitorcount > 1)
-{
-    If !indexjustclicked
-    {
-        GoSub, whichonequestion
-        If !indexjustclicked
-            Return
-    }
-    originalsha1 := trackwallpaper(monitors, indexjustclicked, "cache")
-    indexjustclicked := 0
-}
-Else
-    originalsha1 := trackwallpaper(monitors, 1, "cache")
-If ((!originalsha1) || (RegExMatch(originalsha1, "tmp-[0-9]+\.jpg") = 1))
-    Return
-RegExMatch(originalsha1, "[0-9a-f]+", originalsha1)
-originalline := 0
-Loop, Read, resolved.dat
-{
-    If InStr(A_LoopReadLine, originalsha1)
-        originalline := A_LoopReadLine
-}
-If !originalline
-    Return
-RegExMatch(originalline, "https://[^""]+", originalurl)
-If fromdetails
-{
-    fromdetails := false
-    originalurl := RegExReplace(originalurl, "https://upload.wikimedia.org/wikipedia/commons/[0-9a-f]+/[0-9a-f]+/", "https://commons.wikimedia.org/wiki/File:")
-    Run, %originalurl%
-    Return
-}
-originalname := originalsha1 . "." . RegExReplace(originalurl, ".*\.")
-RegExMatch(originalline, "size = +[0-9]+", originalsize)
-originalsize := RegExReplace(originalsize, "size = +")
-originalsizeinmb := originalsize / 1024 / 1024
-If (originalsizeinmb > 64)
-{
-    MsgBox, 1, This original file sizes %originalsizeinmb% MB. Are you sure you want to download it?
-    IfMsgBox, Ok
-        Goto, confirmed
-    Return
-}
-confirmed:
-If downloadfolder
-    targetfolder := downloadfolder
-Else
-{
-    downloadfoldercache := 0
-    fromoriginal := true
-    GoSub, specifypbutton
-    fromoriginal := false
-    If downloadfoldercache
-    {
-        downloadfolder := downloadfoldercache
-        targetfolder := downloadfolder
-        FileDelete, download\redirect
-        FileCreateDir, download
-        FileAppend, %downloadfolder%, download\redirect
-    }
-    Else
-        targetfolder := A_ScriptDir . "\download"
-}
-FileCreateDir, %targetfolder%
-targetfile := targetfolder . "\" . originalname
-Menu, Tray, Tip, downloading
-udtlp(originalurl, targetfile, server, true)
-Menu, Tray, Tip, wfwp
-If ErrorLevel
-    TrayTip, , Failed., , 16
-Else If (sha(targetfile, true) != originalsha1)
-{
-    FileDelete, %targetfile%
-    TrayTip, , Failed., , 16
-}
-Else
-    TrayTip, , Succeed., , 16
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-detectmenu:
-Reload
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 updatedatamenu:
 reupdatedat:
 FileCreateDir, update
-Menu, Tray, Tip, updating
+Menu, Tray, Tip, updating...
 udtlp("https://raw.githubusercontent.com/fjn308/wfwp/main/upload/sha256andtimestamp.log", "update\sha256andtimestamp.log", server, true, 16)
 If ErrorLevel
 {
@@ -903,7 +738,7 @@ Return
 updatewfwpmenu:
 reupdatewfwp:
 FileCreateDir, update
-Menu, Tray, Tip, updating
+Menu, Tray, Tip, updating...
 udtlp("https://api.github.com/repos/fjn308/wfwp/releases/latest", "update\github.json", server, true, 16)
 If ErrorLevel
 {
@@ -954,21 +789,187 @@ quit:
 Menu, Tray, Tip, wfwp
 FileRemoveDir, update, 1
 Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-exitmenu:
-ExitApp
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+settingsmenu:
+If !fromselectfolder
+    downloadfoldercache := downloadfolder
+If downloadfoldercache
+{
+    downloadfolderforshow := downloadfoldercache
+    pathlength := StrLen(downloadfolderforshow)
+    If (pathlength > 32)
+    {
+        downloadfolderforshow := SubStr(downloadfolderforshow, -28)
+        firstslash := InStr(downloadfolderforshow, "\")
+        If firstslash
+            downloadfolderforshow := SubStr(downloadfolderforshow, firstslash)
+        downloadfolderforshow := "..." . downloadfolderforshow
+    }
+}
+Else
+    downloadfolderforshow := "Not Specified"
+blanklength := 32 - StrLen(downloadfolderforshow)
+Loop, %blanklength%
+    downloadfolderforshow := downloadfolderforshow . " "
+proxychecked :=checked(proxy)
+minutechecked := checked(minute)
+nminutechecked := checked(nminute)
+arthropod := extractbit(binaryexclude, 0)
+bird := extractbit(binaryexclude, 1)
+ppeople := extractbit(binaryexclude, 2)
+amphibian := extractbit(binaryexclude, 3)
+fish := extractbit(binaryexclude, 4)
+reptile := extractbit(binaryexclude, 5)
+oanimals := extractbit(binaryexclude, 6)
+bone := extractbit(binaryexclude, 7)
+shell := extractbit(binaryexclude, 8)
+plant := extractbit(binaryexclude, 9)
+fungi := extractbit(binaryexclude, 10)
+olifeforms := extractbit(binaryexclude, 11)
+arthropodchecked := checked(arthropod)
+birdchecked := checked(bird)
+ppeoplechecked := checked(ppeople)
+amphibianchecked := checked(amphibian)
+fishchecked := checked(fish)
+reptilechecked := checked(reptile)
+oanimalschecked := checked(oanimals)
+bonechecked := checked(bone)
+shellchecked := checked(shell)
+plantchecked := checked(plant)
+fungichecked := checked(fungi)
+olifeformschecked := checked(olifeforms)
+Gui, settings:New, , wfwp: Settings
+Gui, Add, Tab3, , General|Exclude
+Gui, Tab, 1
+Gui, Add, Text, xm ym
+Gui, Add, Text, xm y+m
+Gui, Add, Text, x+m y+m, Connect via a Proxy:
+Gui, Add, CheckBox, x+m %proxychecked% vproxy, http://
+Gui, Add, Edit, x+0 Limit3 Number vip1, %ip1%
+Gui, Add, Text, x+0, .
+Gui, Add, Edit, x+0 Limit3 Number vip2, %ip2%
+Gui, Add, Text, x+0, .
+Gui, Add, Edit, x+0 Limit3 Number vip3, %ip3%
+Gui, Add, Text, x+0, .
+Gui, Add, Edit, x+0 Limit3 Number vip4, %ip4%
+Gui, Add, Text, x+0, :
+Gui, Add, Edit, x+0 Limit5 Number vport, %port%
+Gui, Add, Text, xm y+m
+Gui, Add, Text, x+m y+m, Switching Frequency:
+Gui, Add, Text, x+m, Every ` `
+Gui, Add, Edit, x+m wp vfrequency
+Gui, Add, UpDown, Range1-60, %frequency%
+Gui, Add, Text, x+m, ` `
+Gui, Add, Radio, x+m %minutechecked% vminute, Minuetes
+Gui, Add, Radio, x+m %nminutechecked% vnminute, Hours ` ` `
+Gui, Add, Text, xm y+m
+Gui, Add, Text, x+m y+m, Save Originals into:
+Gui, Add, Text, x+m cblue gspecifypbutton, %downloadfolderforshow%
+Gui, Add, Text, xm y+m
+Gui, Add, Text, x+m y+m Section, If you want to add wfwp to run automatically at startup, you may follow
+Gui, Add, Text, x+0 cblue gmsbutton, ` this
+Gui, Add, Text, xs y+m cblue gmsbutton, guidance `
+Gui, Add, Text, x+0, provided by Microsoft.
+Gui, Tab, 2
+Gui, Add, Text, xm ym
+Gui, Add, Text, xm y+m
+Gui, Add, Text, x+m y+m Section, Some specific categories of pictures may not be proper as wallpapers, which can be
+Gui, Add, Text, xs y+m, excluded here (check the list at the bottom of
+Gui, Add, Text, x+0 cblue gwikibutton, ` this page
+Gui, Add, Text, x+0, ` for more infomation):`n
+Gui, Add, CheckBox, xs y+m %arthropodchecked% varthropod, Arthropods ` ` ` ` ` ` `
+Gui, Add, CheckBox, x+m %birdchecked% vbird, Birds ` ` ` ` ` ` ` ` ` ` ` `
+Gui, Add, CheckBox, x+m Disabled, Mammals
+Gui, Add, CheckBox, xs y+m %amphibianchecked% vamphibian, Amphibians ` ` ` ` ` ` `
+Gui, Add, CheckBox, x+m %fishchecked% vfish, Fish ` ` ` ` ` ` ` ` ` ` ` ` `
+Gui, Add, CheckBox, x+m %reptilechecked% vreptile, Reptiles
+Gui, Add, CheckBox, xs y+m %oanimalschecked% voanimals, Other Animals ` ` ` `
+Gui, Add, CheckBox, x+m %bonechecked% vbone, Bones and Fossils
+Gui, Add, CheckBox, x+m %shellchecked% vshell, Shells
+Gui, Add, CheckBox, xs y+m %plantchecked% vplant, Plants ` ` ` ` ` ` ` ` ` ` `
+Gui, Add, CheckBox, x+m %fungichecked% vfungi, Fungi ` ` ` ` ` ` ` ` ` ` ` `
+Gui, Add, CheckBox, x+m %olifeformschecked% volifeforms, Other Lifeforms
+Gui, Add, Text, xm y+m
+Gui, Add, CheckBox, x+m y+m %ppeoplechecked% vppeople, Reduce Portraits of People on Portrait (Non-Landscape) Monitors
+Gui, Tab
+Gui, Add, Button, xm y+m ghelpbutton, ` ` ` ` ` Help / About ` ` ` `
+Gui, Add, Button, x+m grestorebutton, ` ` Restore to Default `
+Gui, Add, Text, x+0, ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` `
+Gui, Add, Button, x+0 gsubmitbutton, ` ` ` Save and Exit ` ` ` `
+Gui, Show, Center
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-helpbutton:
-Run, https://github.com/fjn308/wfwp
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-msbutton:
-Run, https://support.microsoft.com/en-us/windows/add-an-app-to-run-automatically-at-startup-in-windows-10-150da165-dcd9-7230-517b-cf3c295d89dd
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-wikibutton:
-Run, https://commons.wikimedia.org/wiki/Commons:Featured_pictures
+submitbutton:
+binaryexcludecache := binaryexclude
+speriodcache := speriod
+Gui, Submit
+Gui, settings:Default
+Gui, Destroy
+GoSub, snapshot
+FileDelete, config
+If nextswitch
+    FileAppend, %settings%@%nextswitch%, config
+Else
+    FileAppend, %settings%, config
+downloadfolder := downloadfoldercache
+FileDelete, download\redirect
+If downloadfoldercache
+{
+    FileCreateDir, download
+    If (downloadfoldercache != A_ScriptDir . "\download")
+        FileAppend, %downloadfolder%, download\redirect
+}
+databasecheck:
+If !datfilelength
+{
+    fromdatabasecheck := true
+    If !firstrun
+    {
+        MsgBox, 3, Download or Not, The database is missing. May wfwp download it?
+        IfMsgBox Yes
+        {}
+        Else
+        {
+            MsgBox, , wfwp, wfwp will exit.
+            ExitApp
+        }
+    }
+    Else
+        TrayTip, , It is the first run. wfwp is downloading the database., , 16
+    GoSub, updatedatamenu
+    fromdatabasecheck := false
+    Goto, databasecheck
+}
+firstrun := false
+If ((!qualifieddatanumber) || (binaryexclude != binaryexcludecache))
+{
+    qualifieddatanumber := superdat2sha1("resolved.dat", "urls.sha1", monitortypes, binaryexclude)
+    If !qualifieddatanumber
+    {
+        FileDelete, urls.sha1
+        FileDelete, resolved.dat
+        datfilelength := 0
+        Goto, databasecheck
+    }
+    Menu, updatedotmenu, Rename, 1&, Update the Database (%qualifieddatanumber%/%datfilelength%)
+    refrencenewlists := true
+    moveonlist := premoveon("urls.sha1", "cache", monitors)
+    superremove("urls.sha1", "cache")
+}
+If !nextswitch
+    moveonlist := 0
+If ((!nextswitch) || moveonlist)
+    GoSub, switchmenu
+Else
+{
+    sperioddelta := speriod - speriodcache
+    EnvAdd, nextswitch, sperioddelta, Seconds
+    nextswitchtogo := preparetimer(nextswitch)
+    If nextswitchtogo
+        SetTimer, switchmenu, %nextswitchtogo%, -1
+    Else
+        GoSub, switchmenu
+}
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 specifypbutton:
@@ -995,6 +996,7 @@ GoSub, snapshot
 settingscache := StrReplace(settings, "0x")
 Gui, Submit
 GoSub, snapshot
+Gui, settings:Default
 Gui, Destroy
 fromselectfolder := true
 GoSub, settingsmenu
@@ -1002,20 +1004,62 @@ fromselectfolder := false
 loadconfiguration(settingscache, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+restorebutton:
+GoSub, snapshot
+settingscache := StrReplace(settings, "0x")
+Gui, settings:Default
+Gui, Destroy
+loaddefault(proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
+downloadfoldercache := 0
+fromselectfolder := true
+GoSub, settingsmenu
+fromselectfolder := false
+loadconfiguration(settingscache, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+helpbutton:
+Run, https://github.com/fjn308/wfwp
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+msbutton:
+Run, https://support.microsoft.com/en-us/windows/add-an-app-to-run-automatically-at-startup-in-windows-10-150da165-dcd9-7230-517b-cf3c295d89dd
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+wikibutton:
+Run, https://commons.wikimedia.org/wiki/Commons:Featured_pictures
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+detectmenu:
+Reload
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+exitmenu:
+ExitApp
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 refreshtip:
 lifetimecache := lifetimecache - 1
-If lifetimecache
-{
-    ToolTip, Short Cuts:`nShift + Click: Switch to the Next`nCtrl  + Click: Download the Original`nAlt   + Click: Blacklist and Switch`nClick Again to Hide This Tip: %lifetimecache%s, %xcoordinate%, %ycoordinate%
-    SetTimer, refreshtip, 1000
-}
-Else
+If !lifetimecache
 {
     lifetimecache := lifetime
     oddclick := !oddclick
     ToolTip
     SetTimer, refreshtip, Delete
+    Return
 }
+Else
+    SetTimer, refreshtip, -1000, 14
+If !downloading
+{
+    ToolTip, Short Cuts:`nShift + Click: Switch to the Next`nCtrl  + Click: Download the Original`nAlt   + Click: Blacklist and Switch`nClick Again to Hide This Tip: %lifetimecache%s, %xcoordinate%, %ycoordinate%
+    Return
+}
+If FileExist(targetfile)
+    FileGetSize, downloadedsize, %targetfile%
+Else
+    downloadedsize := 0
+progress := Floor(downloadedsize / originalsize * 100)
+ToolTip, Downloading: %progress%`%`nClick Again to Hide This Tip: %lifetimecache%s, %xcoordinate%, %ycoordinate% ;`nCtrl + Click: Abort the Download
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hotkeys(wparam, lparam)
@@ -1027,7 +1071,12 @@ hotkeys(wparam, lparam)
     Else If ((!GetKeyState("Ctrl")) && GetKeyState("Alt") && (!GetKeyState("Shift")))
         GoSub, blacklistmenu
     Else If ((!GetKeyState("Ctrl")) && (!GetKeyState("Alt")) && GetKeyState("Shift"))
-        GoSub, switchmenu
+    {
+        If (monitorcount > 1)
+            GoSub, switchonemenu
+        Else
+            GoSub, switchmenu
+    }
     Else
     {
         Global lifetime
@@ -1039,8 +1088,7 @@ hotkeys(wparam, lparam)
             Global xcoordinate
             Global ycoordinate
             MouseGetPos, xcoordinate, ycoordinate
-            ToolTip, Short Cuts:`nShift + Click: Switch to the Next`nCtrl  + Click: Download the Original`nAlt   + Click: Blacklist and Switch`nClick Again to Hide This Tip: %lifetime%s, %xcoordinate%, %ycoordinate%
-            SetTimer, refreshtip, 1000
+            SetTimer, refreshtip, -1, 14
         }
         Else
         {
@@ -1052,3 +1100,4 @@ hotkeys(wparam, lparam)
 }
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #Include, scripts\functions.ahk
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
