@@ -662,6 +662,12 @@ simpledownload(oneline, folder, proxy := false, mute := true, timeout := false)
         FileDelete, %renameto%
         Return, 0
     }
+    FileRead, eoi, *C %renameto%
+    If (NumGet(eoi, size - 2, "UShort") != 0xd9ff)
+    {
+        FileDelete, %renameto%
+        Return, 0
+    }
     Return, renameto
 }
 superdat2sha1(datfile, sha1file, monitortypes, binaryexclude)
