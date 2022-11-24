@@ -384,8 +384,8 @@ Loop, %totalnumberrestriction%
     }
     Else
     {
-        Thread, Priority, -1
         Menu, Tray, Tip, caching...
+        Thread, Priority, -1
     }
     sparesapces[whichmonitortypeindex] := sizerestrictionscache[whichmonitortypeindex] - folderpicturesize("cache", match1, match2)
     If (Max(sparesapces*) <= 0)
