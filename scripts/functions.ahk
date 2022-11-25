@@ -817,13 +817,6 @@ udtlp(uri, outfile, proxy := false, mute := false, timeout := false)
         }
         If ErrorLevel
         {
-            If (InStr(A_ScriptName, ".ahk") && (A_Index = 2))
-            {
-                If proxy
-                    FileAppend, powershell.exe %cmd%`r`n, downloaderror.log
-                Else
-                    FileAppend, UrlDownloadToFile`, %uri%`, %outfile%`r`n, downloaderror.log
-            }
             If mute
                 Break
             MsgBox, 5, Download Error, Retry or Cancel?
