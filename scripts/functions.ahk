@@ -61,15 +61,22 @@ setposition()
         Return, 0
     Return, 1
 }
-switchwallpaper(filepathfull, monitors, monitorindex)
+switchwallpaper(filepathfull, monitors, monitorindex, markex := false, filter := false)
 {
+    
+    If markex
+        markex := trackwallpaper(monitors, monitorindex, filter)
     monitorpath := SubStr(monitors[monitorindex], 3)
     idesktopwallpaper := ComObjCreate("{C2CF3110-460E-4fc1-B9D0-8A1C0C9CC4BD}", "{B92B56A9-8B55-4E14-9A89-0199BBB6F93B}")
     offset := 3 * A_PtrSize
     DllCall(NumGet(NumGet(idesktopwallpaper+0), offset), "Ptr", idesktopwallpaper, "Ptr", &monitorpath, "WStr", filepathfull)
     ObjRelease(idesktopwallpaper)
     If (trackwallpaper(monitors, monitorindex) = filepathfull)
+    {
+        If markex
+            FileMove, %filter%\%markex%, %filter%\%markex%.ex%monitorindex%, 1
         Return, 0
+    }
     Return, 1
 }
 trackwallpaper(monitors, monitorindex, filter := false)
@@ -129,7 +136,7 @@ premoveon(sha1file, folder, monitors)
         Return, 0
     Return, SubStr(moveonlist, 2)
 }
-randomdisplayothers(folder, monitors, moveonlist, deletecurrent := false)
+randomdisplayothers(folder, monitors, moveonlist, flashex := false)
 {
     moveonlistcopy := ""
     monitorcount := monitors.Length()
@@ -167,10 +174,18 @@ randomdisplayothers(folder, monitors, moveonlist, deletecurrent := false)
         Sort, randomlist, D, Random
         RegExMatch(randomlist, "[^,]+", firstfile)
         firstfilefullpath := A_ScriptDir . "\" . folder . "\" . firstfile
-        If switchwallpaper(firstfilefullpath, monitors, A_Index)
+        If switchwallpaper(firstfilefullpath, monitors, A_Index, flashex, folder)
             moveonlistcopy := moveonlistcopy . "," . A_Index
-        Else If (deletecurrent && current)
-            FileDelete, %folder%\%current%
+        Else If (flashex && current)
+        {
+            aindex := A_Index
+            Loop, Files, %folder%\*.jpg.ex%aindex%
+            {
+                If (A_LoopFileName = current . ".ex" . aindex)
+                    Continue
+                FileDelete, %folder%\%A_LoopFileName%
+            }
+        }
     }
     If (moveonlistcopy = "")
         Return, 0
