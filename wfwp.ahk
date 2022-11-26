@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Critical, On
 Menu, Tray, Tip, initializing...
-version := "v0.17"
+version := "v0.18"
 If (A_ScriptName = "wfwpnew.exe")
 {
     FileCopy, wfwpnew.exe, wfwp.exe, 1
@@ -41,12 +41,19 @@ FileInstall, commons.png, commons.png, 1
 ; }
 ; Else If (A_ScriptName = "wfwp.exe")
 ;     FileDelete, cache\1f384.png
+Loop, Files, cache\*.jpg.ex*
+{
+    nullstring := RegExReplace(A_LoopFileName, "[0-9a-f]+\.[+-]\..*\..*\.jpg\.ex[0-9]+")
+    If !nullstring
+        FileDelete, cache\%A_LoopFileName%
+}
 CoordMode, Mouse, Screen
 CoordMode, ToolTip, Screen
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 monitorcount := countmonitor()
 monitors := []
 monitortypes := []
+expictures := []
 overuhd := false
 Loop, %monitorcount%
 {
@@ -61,6 +68,7 @@ Loop, %monitorcount%
             overuhd := true, monitorresolution := 3
         monitortype := monitororientation . monitorresolution
         monitortypes.Push(monitortype)
+        expictures.Push(0)
     }
 }
 monitorcount := monitors.Length()
@@ -164,7 +172,7 @@ Else
 Menu, Tray, Add, Download the Original, originalmenu, P1
 Menu, Tray, Add, Check Picture Details, detailsmenu, P7
 Menu, blacklistdotmenu, Add, Blacklist This Picture and Switch to the Next (%blacklistlength%), blacklistmenu, P4
-Menu, blacklistdotmenu, Add, Un-Blacklist the Last Picture and Switch Back, unblacklistmenu, P6
+Menu, blacklistdotmenu, Add, Un-Blacklist the Last Picture and Switch Back, unblacklistmenu, P5
 Menu, blacklistdotmenu, Add, Clear the Blacklist (Caution!), clearblacklistmenu, P8
 Menu, Tray, Add, Blacklist ..., :blacklistdotmenu
 Menu, Tray, Add
@@ -190,8 +198,10 @@ fromdatabasecheck := false
 fromdetails := false
 fromoriginal := false
 fromselectfolder := false
+fromundo := false
 indexjustclicked := 0
 switching := false
+undoablelist := 0
 Global lifetime := 10
 Global oddclick := false
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -217,6 +227,32 @@ Critical, Off
 OnMessage(0x404, "hotkeys")
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+checkifundoable:
+If undoablelist
+    Menu, Tray, Delete, Undo the Last Switching
+undoablelist := ""
+Loop, %monitorcount%
+{
+    expattern := "cache\*.jpg.ex" . A_Index
+    If FileExist(expattern)
+    {
+        undoablelist := undoablelist . "," . A_Index
+        aindex := A_Index
+        Loop, Files, %expattern%
+            expictures[aindex] := StrReplace(A_LoopFileName, ".jpg.ex" . aindex, ".jpg")
+    }
+    Else
+        expictures[A_Index] := 0
+}
+If (undoablelist != "")
+{
+    undoablelist := SubStr(undoablelist, 2)
+    Menu, Tray, Insert, Download the Original, Undo the Last Switching, undomenu, P6
+}
+Else
+    undoablelist := 0
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 snapshot:
 ip1 := formatdigits(ip1, 8)
 ip2 := formatdigits(ip2, 8)
@@ -237,6 +273,9 @@ settings := binaryexclude . Format("{:014x}", osettings)
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 whichonequestion:
+fromundocache := fromundo
+If fromundo
+    fromundo := false
 indexjustclicked := 0
 SysGet, primary, Monitor
 primarywidth := primaryRight - primaryLeft
@@ -253,13 +292,24 @@ totallengthalonglongside := 0
 plusm := "m"
 Loop, %monitorcount%
 {
-    wallpapername := trackwallpaper(monitors, A_Index, "cache")
+    If fromundocache
+    {
+        If A_Index Not In %undoablelist%
+            Continue
+        wallpapername := expictures[A_Index]
+        FileCopy, cache\%wallpapername%.ex%A_Index%, cache\tmp-ex%A_Index%.jpg, 1
+    }
+    Else
+        wallpapername := trackwallpaper(monitors, A_Index, "cache")
     wallpaperratio := getratio(wallpapername, "resolved.dat")
     If (primarywidth > primaryheight)
         commonratio := 720 / 968
     Else
         commonratio := 968 / 720, wallpaperratio := 1 / wallpaperratio
-    wallpaperpath := "cache\" . wallpapername
+    If fromundocache
+        wallpaperpath := "cache\tmp-ex" . A_Index . ".jpg"
+    Else
+        wallpaperpath := "cache\" . wallpapername
     If (wallpaperratio && FileExist(wallpaperpath))
     {
         Gui, Add, Picture, %xory%%plusm% %worh%%maxshortsdie% vpdot%A_Index% gtellwhichone, %wallpaperpath%
@@ -282,6 +332,15 @@ If (totallengthalonglongside > maxlongside)
 Gui, Show, Center
 Thread, Priority, 0
 WinWaitClose, wfwp: Which One? (Click It!)
+If fromundocache
+{
+    Loop, Files, cache\tmp-ex*.jpg
+    {
+        nullstring := RegExReplace(A_LoopFileName, "tmp-ex[0-9]+\.jpg")
+        If !nullstring
+            FileDelete, cache\%A_LoopFileName%
+    }
+}
 Return
 tellwhichone:
 indexjustclicked := StrReplace(A_GuiControl, "pdot")
@@ -302,6 +361,7 @@ switchmenu:
 If switching
 {
     moveonlist := randomdisplayothers("cache", monitors, moveonlist, true)
+    GoSub, checkifundoable
     If moveonlist
     {
         If (moveonlistreal != -1)
@@ -335,6 +395,7 @@ If !moveonlist
     FileAppend, %settings%@%nextswitch%, config
 }
 moveonlistreal := randomdisplayothers("cache", monitors, moveonlist, true), moveonlist := 0
+GoSub, checkifundoable
 FileCreateDir, cache
 randomlistsagain:
 refrencenewlists := false
@@ -424,7 +485,10 @@ Loop, %totalnumberrestriction%
         Goto, randomlistsagain
     simplefile := simpledownload(oneline, "cache", server, timerestrictions[whichmonitortypeindex])
     If (moveonlistreal && simplefile)
+    {
         moveonlistreal := randomdisplayothers("cache", monitors, moveonlistreal, true)
+        GoSub, checkifundoable
+    }
 }
 FileDelete, temp-random.sha1
 If moveonlistreal
@@ -432,6 +496,25 @@ If moveonlistreal
 moveonlistreal := -1
 switching := false
 Menu, Tray, Tip, wfwp
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+undomenu:
+undoablelistcache := undoablelist
+undoone:
+If !InStr(undoablelistcache, ",")
+{
+    exfilename := expictures[undoablelistcache]
+    FileMove, cache\%exfilename%.ex%undoablelistcache%, cache\%exfilename%, 1
+    switchwallpaper(A_ScriptDir . "\cache\" . exfilename, monitors, undoablelistcache, true, "cache")
+    GoSub, checkifundoable
+    Return
+}
+fromundo := true
+GoSub, whichonequestion
+If !indexjustclicked
+    Return
+undoablelistcache := indexjustclicked
+Goto, undoone
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 detailsmenu:
@@ -667,12 +750,13 @@ Loop, %monitorcount%
     }
 }
 switchbackto := A_ScriptDir . "\" . switchbackto
-If (!readyformatch || switchwallpaper(switchbackto, monitors, readyformatch))
+If (!readyformatch || switchwallpaper(switchbackto, monitors, readyformatch, true, "cache"))
 {
     FileAppend, %lastline%`r`n, blacklist
     blacklistlength := blacklistlength + 1
     TrayTip, , Failed to display. The blacklist remains untouched., , 16
 }
+GoSub, checkifundoable
 Menu, blacklistdotmenu, Rename, 1&, Blacklist This Picture and Switch to the Next (%blacklistlength%)
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
