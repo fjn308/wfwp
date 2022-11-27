@@ -1,4 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; to-do: align ui
 Critical, On
 Menu, Tray, Tip, initializing...
 version := "v0.18"
@@ -927,7 +928,7 @@ Gui, Add, Tab3, , General|Exclude
 Gui, Tab, 1
 Gui, Add, Text, xm ym
 Gui, Add, Text, xm y+m
-Gui, Add, Text, x+m y+m, Connect via a Proxy:
+Gui, Add, Text, x+m y+m Section, Connect via a Proxy:
 Gui, Add, CheckBox, x+m %proxychecked% vproxy, http://
 Gui, Add, Edit, x+0 Limit3 Number vip1, %ip1%
 Gui, Add, Text, x+0, .
@@ -938,48 +939,43 @@ Gui, Add, Text, x+0, .
 Gui, Add, Edit, x+0 Limit3 Number vip4, %ip4%
 Gui, Add, Text, x+0, :
 Gui, Add, Edit, x+0 Limit5 Number vport, %port%
-Gui, Add, Text, xm y+m
-Gui, Add, Text, x+m y+m, Switching Frequency:
+Gui, Add, Text, y+m
+Gui, Add, Text, xs y+m, Switching Frequency:
 Gui, Add, Text, x+m, Every ` `
 Gui, Add, Edit, x+m wp vfrequency
 Gui, Add, UpDown, Range1-60, %frequency%
 Gui, Add, Text, x+m, ` `
 Gui, Add, Radio, x+m %minutechecked% vminute, Minuetes
-Gui, Add, Radio, x+m %nminutechecked% vnminute, Hours ` ` `
-Gui, Add, Text, xm y+m
-Gui, Add, Text, x+m y+m, Save Originals into:
-Gui, Add, Text, x+m cblue gspecifypbutton, %downloadfolderforshow%
-Gui, Add, Text, xm y+m
-Gui, Add, Text, x+m y+m Section, If you want to add wfwp to run automatically at startup, you may follow
-Gui, Add, Text, x+0 cblue gmsbutton, ` this
-Gui, Add, Text, xs y+m cblue gmsbutton, guidance `
-Gui, Add, Text, x+0, provided by Microsoft.
+Gui, Add, Radio, x+m %nminutechecked% vnminute, Hours
+Gui, Add, Text, y+m
+Gui, Add, Text, xs y+m, Save Originals into:
+Gui, Add, Text, x+m CBlue gspecifypbutton, %downloadfolderforshow%
+Gui, Add, Text, y+m
+Gui, Add, Text, xs y+m, If you want to add wfwp to run automatically at startup, you may follow
+Gui, Add, Link, xs y+m, <a href="https://support.microsoft.com/en-us/windows/add-an-app-to-run-automatically-at-startup-in-windows-10-150da165-dcd9-7230-517b-cf3c295d89dd">this guidance</a> provided by Microsoft.
 Gui, Tab, 2
 Gui, Add, Text, xm ym
 Gui, Add, Text, xm y+m
-Gui, Add, Text, x+m y+m Section, Some specific categories of pictures may not be proper as wallpapers, which can be
-Gui, Add, Text, xs y+m, excluded here (check the list at the bottom of
-Gui, Add, Text, x+0 cblue gwikibutton, ` this page
-Gui, Add, Text, x+0, ` for more infomation):`n
+Gui, Add, Text, x+m y+m Section, Some categories of pictures, which may not be proper as wallpapers, can
+Gui, Add, Link, xs y+m, be excluded here (check the bottom of <a href="https://commons.wikimedia.org/wiki/Commons:Featured_pictures">this page</a> for more infomation):`n
 Gui, Add, CheckBox, xs y+m %arthropodchecked% varthropod, Arthropods ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %birdchecked% vbird, Birds ` ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m Disabled, Mammals
-Gui, Add, CheckBox, xs y+m %amphibianchecked% vamphibian, Amphibians ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %fishchecked% vfish, Fish ` ` ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %reptilechecked% vreptile, Reptiles
-Gui, Add, CheckBox, xs y+m %oanimalschecked% voanimals, Other Animals ` ` ` `
-Gui, Add, CheckBox, x+m %bonechecked% vbone, Bones and Fossils
-Gui, Add, CheckBox, x+m %shellchecked% vshell, Shells
-Gui, Add, CheckBox, xs y+m %plantchecked% vplant, Plants ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %fungichecked% vfungi, Fungi ` ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, CheckBox, x+m %olifeformschecked% volifeforms, Other Lifeforms
-Gui, Add, Text, xm y+m
-Gui, Add, CheckBox, x+m y+m %ppeoplechecked% vppeople, Reduce Portraits of People on Portrait (Non-Landscape) Monitors
+Gui, Add, CheckBox, x+m wp %birdchecked% vbird, Birds
+Gui, Add, CheckBox, x+m wp Disabled, Mammals
+Gui, Add, CheckBox, xs y+m wp %amphibianchecked% vamphibian, Amphibians
+Gui, Add, CheckBox, x+m wp %fishchecked% vfish, Fish
+Gui, Add, CheckBox, x+m wp %reptilechecked% vreptile, Reptiles
+Gui, Add, CheckBox, xs y+m wp %oanimalschecked% voanimals, Other Animals
+Gui, Add, CheckBox, x+m wp %bonechecked% vbone, Bones and Fossils
+Gui, Add, CheckBox, x+m wp %shellchecked% vshell, Shells
+Gui, Add, CheckBox, xs y+m wp %plantchecked% vplant, Plants
+Gui, Add, CheckBox, x+m wp %fungichecked% vfungi, Fungi
+Gui, Add, CheckBox, x+m wp %olifeformschecked% volifeforms, Other Lifeforms
+Gui, Add, Text, y+m
+Gui, Add, CheckBox, xs y+m %ppeoplechecked% vppeople, Reduce Portraits of People on Portrait (Non-Landscape) Monitors
 Gui, Tab
-Gui, Add, Button, xm y+m ghelpbutton, ` ` ` ` ` Help / About ` ` ` `
-Gui, Add, Button, x+m grestorebutton, ` ` Restore to Default `
-Gui, Add, Text, x+0, ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` `
-Gui, Add, Button, x+0 gsubmitbutton, ` ` ` Save and Exit ` ` ` `
+Gui, Add, Link, xm y+m wp Right Section, <a href="https://github.com/fjn308/wfwp">About wfwp</a> `
+Gui, Add, Button, xm ys Center grestorebutton, ` Restore Defaults `
+Gui, Add, Button, x+m wp Center gsubmitbutton, Save and Exit
 Gui, Show, Center
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1099,18 +1095,6 @@ fromselectfolder := true
 GoSub, settingsmenu
 fromselectfolder := false
 loadconfiguration(settingscache, proxy, ip1, ip2, ip3, ip4, port, frequency, minute, nminute, binaryexclude)
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-helpbutton:
-Run, https://github.com/fjn308/wfwp
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-msbutton:
-Run, https://support.microsoft.com/en-us/windows/add-an-app-to-run-automatically-at-startup-in-windows-10-150da165-dcd9-7230-517b-cf3c295d89dd
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-wikibutton:
-Run, https://commons.wikimedia.org/wiki/Commons:Featured_pictures
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 detectmenu:
