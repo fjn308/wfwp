@@ -570,7 +570,7 @@ originalname := originalsha1 . "." . RegExReplace(originalurl, ".*\.")
 RegExMatch(originalline, "size = +[0-9]+", originalsize)
 originalsize := RegExReplace(originalsize, "size = +")
 originalsizeinmb := originalsize / 1024 / 1024
-If (originalsizeinmb > 64)
+If (originalsizeinmb > 128)
 {
     MsgBox, 1, This original file sizes %originalsizeinmb% MB. Are you sure you want to download it?
     IfMsgBox, Ok
