@@ -974,8 +974,9 @@ Gui, Add, Text, y+m
 Gui, Add, CheckBox, xs y+m %ppeoplechecked% vppeople, Reduce Portraits of People on Portrait (Non-Landscape) Monitors
 Gui, Tab
 Gui, Add, Link, xm y+m wp Right Section, <a href="https://github.com/fjn308/wfwp">About wfwp</a> `
-Gui, Add, Button, xm ys Center grestorebutton, ` Restore Defaults `
-Gui, Add, Button, x+m wp Center gsubmitbutton, Save and Exit
+Gui, Add, Text, xm ys, ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` `
+Gui, Add, Button, xm ys wp Center gsubmitbutton, Save and Exit
+Gui, Add, Button, x+m wp Center grestorebutton, Restore Default
 Gui, Show, Center
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
