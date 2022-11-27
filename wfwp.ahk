@@ -1,5 +1,4 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; to-do: align ui
 Critical, On
 Menu, Tray, Tip, initializing...
 version := "v0.18"
@@ -173,7 +172,7 @@ Else
 Menu, Tray, Add, Download the Original, originalmenu, P1
 Menu, Tray, Add, Check Picture Details, detailsmenu, P7
 Menu, blacklistdotmenu, Add, Blacklist This Picture and Switch to the Next (%blacklistlength%), blacklistmenu, P4
-Menu, blacklistdotmenu, Add, Un-Blacklist the Last Picture and Switch Back, unblacklistmenu, P5
+Menu, blacklistdotmenu, Add, Un-Blacklist the Last Picture in the Blacklist and Switch Back, unblacklistmenu, P5
 Menu, blacklistdotmenu, Add, Clear the Blacklist (Caution!), clearblacklistmenu, P8
 Menu, Tray, Add, Blacklist ..., :blacklistdotmenu
 Menu, Tray, Add
@@ -230,7 +229,7 @@ Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 checkifundoable:
 If undoablelist
-    Menu, Tray, Delete, Undo the Last Switching
+    Menu, Tray, Delete, Undo the Latest Switching
 undoablelist := ""
 Loop, %monitorcount%
 {
@@ -248,7 +247,7 @@ Loop, %monitorcount%
 If (undoablelist != "")
 {
     undoablelist := SubStr(undoablelist, 2)
-    Menu, Tray, Insert, Download the Original, Undo the Last Switching, undomenu, P6
+    Menu, Tray, Insert, Download the Original, Undo the Latest Switching, undomenu, P6
 }
 Else
     undoablelist := 0
