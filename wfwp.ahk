@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Critical, On
 Menu, Tray, Tip, initializing...
-version := "v0.18"
+version := "v0.17.1"
 If (A_ScriptName = "wfwpnew.exe")
 {
     FileCopy, wfwpnew.exe, wfwp.exe, 1
@@ -572,8 +572,8 @@ originalsize := RegExReplace(originalsize, "size = +")
 originalsizeinmb := originalsize / 1024 / 1024
 If (originalsizeinmb > 128)
 {
-    MsgBox, 1, This original file sizes %originalsizeinmb% MB. Are you sure you want to download it?
-    IfMsgBox, Ok
+    MsgBox, 4, Download or Not, This original file sizes %originalsizeinmb% MB. Are you sure you want to download it?
+    IfMsgBox, Yes
         Goto, confirmed
     Return
 }
@@ -1005,7 +1005,7 @@ If !datfilelength
     fromdatabasecheck := true
     If !firstrun
     {
-        MsgBox, 3, Download or Not, The database is missing. May wfwp download it?
+        MsgBox, 4, Download or Not, The database is missing. May wfwp download it?
         IfMsgBox Yes
         {}
         Else
@@ -1102,6 +1102,14 @@ Reload
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 exitmenu:
+If (downloading || switching)
+{
+    MsgBox, 4, Re-Load or Not, Re-detecting is actually re-loading, but wfwp is downloading or switching right now. Re-Load anyway?
+    IfMsgBox Yes
+    {}
+    Else
+        Return
+}
 ExitApp
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
