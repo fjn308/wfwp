@@ -61,7 +61,7 @@ If update
     {
         FileDelete, reference.dat
         MsgBox, 5, Update Error, SHA-256 does not match. reference.dat is broken. Retry or cancel?
-        IfMsgBox, Retry
+        IfMsgBox Retry
             Goto, reupdate
         MsgBox, The script will exit.
         ExitApp
