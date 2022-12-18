@@ -63,7 +63,6 @@ setposition()
 }
 switchwallpaper(filepathfull, monitors, monitorindex, flashex := false, filter := false)
 {
-    
     If flashex
         flashex := trackwallpaper(monitors, monitorindex, filter)
     monitorpath := SubStr(monitors[monitorindex], 3)
@@ -279,6 +278,30 @@ checked(key)
     If key
         Return, "Checked"
     Return, ""
+}
+checkfingerprint(fingerprint)
+{
+    fingerprintcopy := fingerprint
+    monitorcount := countmonitor()
+    fingerprint := ""
+    Loop, %monitorcount%
+    {
+        indexfromzero := A_Index - 1
+        monitor := detectmonitor(indexfromzero)
+        If monitor
+            fingerprint := fingerprint . monitor
+    }
+    If (fingerprintcopy != fingerprint)
+    {
+        MsgBox, 4, Re-Detect or Not, Seems monitors changed. Re-load wfwp to re-detect them? (Clicking No will hide this tip.)
+        IfMsgBox Yes
+            Reload
+        Else IfMsgBox No
+            Return, 1
+        Else
+            Return, 0
+    }
+    Return, 0
 }
 countandsortblacklist(blacklist)
 {
