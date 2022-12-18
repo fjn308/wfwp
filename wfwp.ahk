@@ -50,6 +50,7 @@ Loop, Files, cache\*.jpg.ex*
 CoordMode, Mouse, Screen
 CoordMode, ToolTip, Screen
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+fingerprint := ""
 monitorcount := countmonitor()
 monitors := []
 monitortypes := []
@@ -61,6 +62,7 @@ Loop, %monitorcount%
     monitor := detectmonitor(indexfromzero)
     If monitor
     {
+        fingerprint := fingerprint . monitor
         monitors.Push(monitor)
         monitororientation := SubStr(monitor, 1, 1)
         monitorresolution := SubStr(monitor, 2, 1)
@@ -199,6 +201,7 @@ fromdetails := false
 fromoriginal := false
 fromselectfolder := false
 fromundo := false
+ignorefingerprint := false
 indexjustclicked := 0
 switching := false
 undoablelist := 0
@@ -358,6 +361,8 @@ GoSub, switchmenu
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 switchmenu:
+If !ignorefingerprint
+    ignorefingerprint := checkfingerprint(fingerprint)
 If switching
 {
     moveonlist := randomdisplayothers("cache", monitors, moveonlist, true)
@@ -573,7 +578,7 @@ originalsizeinmb := originalsize / 1024 / 1024
 If (originalsizeinmb > 128)
 {
     MsgBox, 4, Download or Not, This original file sizes %originalsizeinmb% MB. Are you sure you want to download it?
-    IfMsgBox, Yes
+    IfMsgBox Yes
         Goto, confirmed
     Return
 }
@@ -807,7 +812,7 @@ If (sha("update\reference.dat") != sha256)
 {
     FileRemoveDir, update, 1
     MsgBox, 5, Update Error, SHA-256 does not match. Retry or Cancel?
-    IfMsgBox, Retry
+    IfMsgBox Retry
         Goto, reupdatedat
     Return
 }
@@ -858,7 +863,7 @@ FileRead, sha256, update\sha256
 If (sha("update\wfwp.exe") != sha256)
 {
     MsgBox, 5, Update Error, SHA-256 does not match. Retry or Cancel?
-    IfMsgBox, Retry
+    IfMsgBox Retry
     {
         FileRemoveDir, update, 1
         Goto, reupdatewfwp
