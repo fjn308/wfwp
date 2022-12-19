@@ -201,7 +201,6 @@ fromdetails := false
 fromoriginal := false
 fromselectfolder := false
 fromundo := false
-ignorefingerprint := false
 indexjustclicked := 0
 switching := false
 undoablelist := 0
@@ -361,8 +360,6 @@ GoSub, switchmenu
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 switchmenu:
-If !ignorefingerprint
-    ignorefingerprint := checkfingerprint(fingerprint)
 If switching
 {
     moveonlist := randomdisplayothers("cache", monitors, moveonlist, true)
@@ -386,6 +383,8 @@ If switching
     }
     Return
 }
+Else If (!downloading && checkfingerprint(fingerprint))
+    Reload
 Else
 {
     switching := true
@@ -1103,10 +1102,6 @@ loadconfiguration(settingscache, proxy, ip1, ip2, ip3, ip4, port, frequency, min
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 detectmenu:
-Reload
-Return
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-exitmenu:
 If (downloading || switching)
 {
     MsgBox, 4, Re-Load or Not, Re-detecting is actually re-loading, but wfwp is downloading or switching right now. Re-Load anyway?
@@ -1115,6 +1110,10 @@ If (downloading || switching)
     Else
         Return
 }
+Reload
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+exitmenu:
 ExitApp
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
