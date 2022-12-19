@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Critical, On
 Menu, Tray, Tip, initializing...
-version := "v0.17.1"
+version := "v0.17.2"
 If (A_ScriptName = "wfwpnew.exe")
 {
     FileCopy, wfwpnew.exe, wfwp.exe, 1
