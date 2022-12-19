@@ -292,16 +292,9 @@ checkfingerprint(fingerprint)
             fingerprint := fingerprint . monitor
     }
     If (fingerprintcopy != fingerprint)
-    {
-        MsgBox, 4, Re-Detect or Not, Seems monitors changed. Re-load wfwp to re-detect them? (Clicking No will hide this tip.)
-        IfMsgBox Yes
-            Reload
-        Else IfMsgBox No
-            Return, 1
-        Else
-            Return, 0
-    }
-    Return, 0
+        Return, 1
+    Else
+        Return, 0
 }
 countandsortblacklist(blacklist)
 {
