@@ -960,7 +960,7 @@ Gui, Tab, 2
 Gui, Add, Text, xm ym
 Gui, Add, Text, xm y+m
 Gui, Add, Text, x+m y+m Section, Some categories of pictures, which may not be proper as wallpapers, can
-Gui, Add, Link, xs y+m, be excluded here (check the bottom of <a href="https://commons.wikimedia.org/wiki/Commons:Featured_pictures">this page</a> for more infomation):`n
+Gui, Add, Link, xs y+m, be checked and excluded here (visit <a href="https://commons.wikimedia.org/wiki/Commons:Featured_pictures">this page</a> for more information):`n
 Gui, Add, CheckBox, xs y+m %arthropodchecked% varthropod, Arthropods ` ` ` ` ` ` `
 Gui, Add, CheckBox, x+m wp %birdchecked% vbird, Birds
 Gui, Add, CheckBox, x+m wp Disabled, Mammals
