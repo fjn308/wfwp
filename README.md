@@ -18,7 +18,7 @@ Other notable features include: supporting multiple monitors, blacklisting speci
 
 ### 2.3 Multiple Monitors
 
-If there are multiple monitors, a clickable "Which One?" box will appear when **Switch**, **Blacklist**, **Details**, or **Original** button is clicked:
+If there are multiple monitors, a clickable "Which One?" box will appear when **Switch**, **Undo**, **Blacklist**, **Details**, or **Original** button is clicked:
 
 ![whichone](/screenshots/6.png)
 
