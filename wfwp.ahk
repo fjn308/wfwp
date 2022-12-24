@@ -24,23 +24,8 @@ Else
     MsgBox, , wfwp, My name should be wfwp. I will exit.
     ExitApp
 }
+GoSub, refreshicon
 FileInstall, commons.png, commons.png, 1
-; If (((A_MM = "10") && (A_DD = "30")) || ((A_MM = "10") && (A_DD = "31")) || ((A_MM = "11") && (A_DD = "01")))
-; {
-;     FileInstall, cache\1f383.png, cache\1f383.png, 1
-;     If FileExist("cache\1f383.png")
-;         Menu, Tray, Icon, cache\1f383.png
-; }
-; Else If (A_ScriptName = "wfwp.exe")
-;     FileDelete, cache\1f383.png
-; If (((A_MM = "12") && (A_DD = "24")) || ((A_MM = "12") && (A_DD = "25")) || ((A_MM = "12") && (A_DD = "26")))
-; {
-;     FileInstall, cache\1f384.png, cache\1f384.png, 1
-;     If FileExist("cache\1f384.png")
-;         Menu, Tray, Icon, cache\1f384.png
-; }
-; Else If (A_ScriptName = "wfwp.exe")
-;     FileDelete, cache\1f384.png
 Loop, Files, cache\*.jpg.ex*
 {
     nullstring := RegExReplace(A_LoopFileName, "[0-9a-f]+\.[+-]\..*\..*\.jpg\.ex[0-9]+")
@@ -500,6 +485,7 @@ If moveonlistreal
 moveonlistreal := -1
 switching := false
 Menu, Tray, Tip, wfwp
+GoSub, refreshicon
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 undomenu:
@@ -1142,6 +1128,32 @@ progress := Floor(downloadedsize / originalsize * 100)
 ToolTip, Downloading: %progress%`%`nClick Again to Hide This Tip: %lifetimecache%s, %xcoordinate%, %ycoordinate% ;`nCtrl + Click: Abort the Download
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+refreshicon:
+; If (((A_MM = "10") && (A_DD = "30")) || ((A_MM = "10") && (A_DD = "31")) || ((A_MM = "11") && (A_DD = "01")))
+; {
+;     FileInstall, cache\1f383.png, cache\1f383.png, 1
+;     If FileExist("cache\1f383.png")
+;         Menu, Tray, Icon, cache\1f383.png
+; }
+; Else If (((A_MM = "12") && (A_DD = "24")) || ((A_MM = "12") && (A_DD = "25")) || ((A_MM = "12") && (A_DD = "26")))
+; {
+;     FileInstall, cache\1f384.png, cache\1f384.png, 1
+;     If FileExist("cache\1f384.png")
+;         Menu, Tray, Icon, cache\1f384.png
+; }
+; Else 
+; {
+;     If (A_ScriptName = "wfwp.exe")
+;     {
+;         Menu, Tray, Icon, *
+;         FileDelete, cache\1f383.png
+;         FileDelete, cache\1f384.png
+;     }
+;     Else If FileExist("commons.ico")
+;         Menu, Tray, Icon, commons.ico
+; }
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hotkeys(wparam, lparam)
 {
     If (lparam != 0x202)
