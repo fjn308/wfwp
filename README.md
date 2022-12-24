@@ -28,7 +28,7 @@ Here is a real example:
 
 # 3. Things You Need to Know
 
-- `wfwp` assumes that aspect ratios of monitors are around 16:9, that is, for landscape monitors, it selects wallpapers from the pictures with ratios between 4:3 and 256:81; while for portrait monitors, the ratios would be between 256:81 and 3:4.
+- `wfwp` assumes that aspect ratios of monitors are around 16:9, that is, for landscape monitors, it selects wallpapers from the pictures with ratios between 4:3 and 64:27; while for portrait monitors, the ratios would be between 64:27 and 3:4.
 
 - `wfwp` caches pictures to ensure smooth switches. For each monitor, there is an independent limitation on its cache:
   - Resolution smaller or equal to FHD (1920*1080): ~9MB FHD pictures resized from higher resolution ones;
