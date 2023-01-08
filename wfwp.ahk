@@ -16,7 +16,7 @@ Else If (A_ScriptName = "wfwp.exe")
 }
 Else If (A_ScriptName = "wfwp.ahk")
 {
-    If  FileExist("commons.ico")
+    If FileExist("commons.ico")
         Menu, Tray, Icon, commons.ico
 }
 Else
@@ -24,8 +24,8 @@ Else
     MsgBox, , wfwp, My name should be wfwp. I will exit.
     ExitApp
 }
-GoSub, refreshicon
 FileInstall, commons.png, commons.png, 1
+FileInstall, offline.png, offline.png, 1
 Loop, Files, cache\*.jpg.ex*
 {
     nullstring := RegExReplace(A_LoopFileName, "[0-9a-f]+\.[+-]\..*\..*\.jpg\.ex[0-9]+")
@@ -128,6 +128,7 @@ Else
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 FileDelete, urls.sha1
 moveonlist := 0
+moveonlistcache := 0
 moveonlistreal := -1
 qualifieddatanumber := 0
 If FileExist("resolved.dat")
@@ -187,10 +188,12 @@ fromoriginal := false
 fromselectfolder := false
 fromundo := false
 indexjustclicked := 0
+online := true
 switching := false
 undoablelist := 0
 Global lifetime := 10
 Global oddclick := false
+GoSub, refreshicon
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 If ((!firstrun) && qualifieddatanumber)
 {
@@ -375,15 +378,38 @@ Else
     switching := true
     Menu, Tray, Tip, switching...
 }
+If moveonlist
+    moveonlistreal := randomdisplayothers("cache", monitors, moveonlist, true)
+Else
+    moveonlistreal := randomdisplayothers("cache", monitors, moveonlistcache, true)
+online := ping()
+GoSub, refreshicon
 If !moveonlist
 {
-    SetTimer, switchmenu, %period%, -1
+    moveonlistcache := 0
     nextswitch := A_NowUTC
-    EnvAdd, nextswitch, speriod, Seconds
+    If (moveonlistreal && !online)
+    {
+        moveonlistcache := moveonlistreal
+        SetTimer, switchmenu, 60000, -1
+        EnvAdd, nextswitch, 60, Seconds
+    }
+    Else
+    {
+        SetTimer, switchmenu, %period%, -1
+        EnvAdd, nextswitch, speriod, Seconds
+    }
     FileDelete, config
     FileAppend, %settings%@%nextswitch%, config
 }
-moveonlistreal := randomdisplayothers("cache", monitors, moveonlist, true), moveonlist := 0
+moveonlist := 0
+If !online
+{
+    switching := false
+    Menu, Tray, Tip, offline
+    moveonlistreal := -1
+    Return
+}
 GoSub, checkifundoable
 FileCreateDir, cache
 randomlistsagain:
@@ -485,7 +511,6 @@ If moveonlistreal
 moveonlistreal := -1
 switching := false
 Menu, Tray, Tip, wfwp
-GoSub, refreshicon
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 undomenu:
@@ -554,6 +579,13 @@ If fromdetails
     fromdetails := false
     originalurl := RegExReplace(originalurl, "https://upload.wikimedia.org/wikipedia/commons/[0-9a-f]+/[0-9a-f]+/", "https://commons.wikimedia.org/wiki/File:")
     Run, %originalurl%
+    Return
+}
+online := ping()
+GoSub, refreshicon
+If !online
+{
+    Menu, Tray, Tip, offline
     Return
 }
 originalname := originalsha1 . "." . RegExReplace(originalurl, ".*\.")
@@ -674,6 +706,16 @@ Else If (extractresolution = 3)
     resolutionmatch := ".uhd."
 Else
     Return
+online := ping()
+GoSub, refreshicon
+If !online
+{
+    FileAppend, %lastline%`r`n, blacklist
+    blacklistlength := blacklistlength + 1
+    Menu, blacklistdotmenu, Rename, 1&, Blacklist This Picture and Switch to the Next (%blacklistlength%)
+    Menu, Tray, Tip, offline
+    Return
+}
 switchbackto := false
 Loop, Read, urls.sha1
 {
@@ -756,6 +798,13 @@ Menu, blacklistdotmenu, Rename, 1&, Blacklist This Picture and Switch to the Nex
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 updatedatamenu:
+online := ping()
+GoSub, refreshicon
+If !online
+{
+    Menu, Tray, Tip, offline
+    Return
+}
 reupdatedat:
 FileCreateDir, update
 Menu, Tray, Tip, updating...
@@ -810,6 +859,13 @@ TrayTip, , Succeed., , 16
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 updatewfwpmenu:
+online := ping()
+GoSub, refreshicon
+If !online
+{
+    Menu, Tray, Tip, offline
+    Return
+}
 reupdatewfwp:
 FileCreateDir, update
 Menu, Tray, Tip, updating...
@@ -1129,7 +1185,9 @@ ToolTip, Downloading: %progress%`%`nClick Again to Hide This Tip: %lifetimecache
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 refreshicon:
-; If (((A_MM = "10") && (A_DD = "30")) || ((A_MM = "10") && (A_DD = "31")) || ((A_MM = "11") && (A_DD = "01")))
+If (!online && FileExist("offline.png"))
+    Menu, Tray, Icon, offline.png
+; Else If (((A_MM = "10") && (A_DD = "30")) || ((A_MM = "10") && (A_DD = "31")) || ((A_MM = "11") && (A_DD = "01")))
 ; {
 ;     FileInstall, cache\1f383.png, cache\1f383.png, 1
 ;     If FileExist("cache\1f383.png")
@@ -1141,17 +1199,17 @@ refreshicon:
 ;     If FileExist("cache\1f384.png")
 ;         Menu, Tray, Icon, cache\1f384.png
 ; }
-; Else 
-; {
-;     If (A_ScriptName = "wfwp.exe")
-;     {
-;         Menu, Tray, Icon, *
-;         FileDelete, cache\1f383.png
-;         FileDelete, cache\1f384.png
-;     }
-;     Else If FileExist("commons.ico")
-;         Menu, Tray, Icon, commons.ico
-; }
+Else
+{
+    If (A_ScriptName = "wfwp.exe")
+    {
+        Menu, Tray, Icon, *
+        FileDelete, cache\1f383.png
+        FileDelete, cache\1f384.png
+    }
+    Else If FileExist("commons.ico")
+        Menu, Tray, Icon, commons.ico
+}
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hotkeys(wparam, lparam)
