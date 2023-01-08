@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Critical, On
 Menu, Tray, Tip, initializing...
-version := "v0.18"
+version := "v0.19"
 If (A_ScriptName = "wfwpnew.exe")
 {
     FileCopy, wfwpnew.exe, wfwp.exe, 1
@@ -382,7 +382,7 @@ If moveonlist
     moveonlistreal := randomdisplayothers("cache", monitors, moveonlist, true)
 Else
     moveonlistreal := randomdisplayothers("cache", monitors, moveonlistcache, true)
-online := ping()
+online := ping(server)
 GoSub, refreshicon
 If !moveonlist
 {
@@ -581,7 +581,7 @@ If fromdetails
     Run, %originalurl%
     Return
 }
-online := ping()
+online := ping(server)
 GoSub, refreshicon
 If !online
 {
@@ -706,7 +706,7 @@ Else If (extractresolution = 3)
     resolutionmatch := ".uhd."
 Else
     Return
-online := ping()
+online := ping(server)
 GoSub, refreshicon
 If !online
 {
@@ -798,7 +798,7 @@ Menu, blacklistdotmenu, Rename, 1&, Blacklist This Picture and Switch to the Nex
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 updatedatamenu:
-online := ping()
+online := ping(server)
 GoSub, refreshicon
 If !online
 {
@@ -859,7 +859,7 @@ TrayTip, , Succeed., , 16
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 updatewfwpmenu:
-online := ping()
+online := ping(server)
 GoSub, refreshicon
 If !online
 {
