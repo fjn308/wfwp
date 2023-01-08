@@ -620,6 +620,10 @@ oct2hexhex(oct)
         Return, "hh"
     Return, byte2hex(SubStr(oct, 1, 4)) . byte2hex(SubStr(oct, 5))
 }
+ping()
+{
+    Return, 1
+}
 preparetimer(time)
 {
     EnvSub, time, A_NowUTC, Seconds
