@@ -69,7 +69,7 @@ Except for the wallpapers, which come from Wikimedia Commons, the icons used in 
 ```
 commons.ico: https://commons.wikimedia.org/static/favicon/commons.ico
 commons.png: https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Commons-logo.svg/720px-Commons-logo.svg.png
-offline.png: https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Wikimedia-logo_black.svg/48px-Wikimedia-logo_black.svg.png
+offline.png: https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Wikimedia-logo_black.svg/32px-Wikimedia-logo_black.svg.png
 ```
 
 If there are any legal issues requiring further addressing, please let me know. Thank you.
