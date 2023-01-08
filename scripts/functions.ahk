@@ -620,9 +620,19 @@ oct2hexhex(oct)
         Return, "hh"
     Return, byte2hex(SubStr(oct, 1, 4)) . byte2hex(SubStr(oct, 5))
 }
-ping()
+ping(proxy := false)
 {
-    Return, 1
+    Loop, 3
+    {
+        FileDelete, 204.tmp
+        If !udtlp("https://www.gstatic.com/generate_204", "204.tmp", proxy, true)
+        {
+            FileDelete, 204.tmp
+            Return, 1
+        }
+    }
+    FileDelete, 204.tmp
+    Return, 0
 }
 preparetimer(time)
 {
