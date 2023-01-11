@@ -49,7 +49,7 @@ If your network is limited to accessing GitHub or Wikipedia, a proxy has to be s
 
 ### 4.2 Advanced
 
-If you have [AutoHotkey](https://www.autohotkey.com/) (current version, not deprecated v1.0 or v2 beta) installed, you can also run the `wfwp.ahk` directly or compile a `wfwp.exe` yourself (select `commons.ico` as icon manually). The minimal source files required are `.\wfwp.ahk`, `.\commons.ico`, `.\commons.png`, and `.\scripts\functions.ahk`. The only difference between the script file and the executable binary is that the former does not have the ability to update itself.
+If you have [AutoHotkey](https://www.autohotkey.com/) (current version, not deprecated v1.0 or v2 beta) installed, you can also run the `wfwp.ahk` directly or compile a `wfwp.exe` yourself (select `commons.ico` as icon manually). The minimal source files required are `.\wfwp.ahk`, `.\commons.ico`, `.\commons.png`, `.\offline.png`, and `.\scripts\functions.ahk`. The only difference between the script file and the executable binary is that the former does not have the ability to update itself.
 
 # 5. Things You May Want to Know
 
