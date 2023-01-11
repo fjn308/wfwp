@@ -391,7 +391,7 @@ If !moveonlist
     If (moveonlistreal && !online)
     {
         moveonlistcache := moveonlistreal
-        SetTimer, switchmenu, 60000, -1
+        SetTimer, switchmenu, -60000, -1
         EnvAdd, nextswitch, 60, Seconds
     }
     Else
@@ -1210,6 +1210,19 @@ Else
     Else If FileExist("commons.ico")
         Menu, Tray, Icon, commons.ico
 }
+If !online
+    SetTimer, refreshstate, -30000, -2
+Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+refreshstate:
+online := ping(server)
+If online
+{
+    GoSub, refreshicon
+    Menu, Tray, Tip, wfwp
+}
+Else
+    SetTimer, refreshstate, -30000, -2
 Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 hotkeys(wparam, lparam)
